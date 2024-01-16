@@ -279,6 +279,8 @@ class _AddProductsState extends State<AddProducts> {
             'name': nameValue,
             'price': priceValueConvertedToInt,
             'description': descriptionValue,
+            'type': typeOfFoodValue,
+            'category': categoryOfFoodValue,
             'file': await MultipartFile.fromFile(file!.path,
                 filename: fullImageName),
           };
@@ -287,15 +289,19 @@ class _AddProductsState extends State<AddProducts> {
 
           const String url = "http://localhost:4848/api/add-product";
 
-          Response serverResponse = await Dio().post(url,
-              data: formData,
-              options: Options(
-                contentType: Headers.formUrlEncodedContentType,
-              ), onSendProgress: (int sent, int total) {
-            double doublePercentage = ((sent * 100) / total);
-            String finalPercentage = doublePercentage.toStringAsFixed(2);
-            print('$finalPercentage% done');
-          });
+          Response serverResponse = await Dio().post(
+            url,
+            data: formData,
+            options: Options(
+              contentType: Headers.formUrlEncodedContentType,
+            ),
+
+            //      onSendProgress: (int sent, int total) {
+            //   double doublePercentage = ((sent * 100) / total);
+            //   String finalPercentage = doublePercentage.toStringAsFixed(2);
+            //   print('$finalPercentage% done');
+            // }
+          );
 
 //if upload was successfull then
           if (serverResponse.statusCode == 200) {
@@ -327,7 +333,7 @@ class _AddProductsState extends State<AddProducts> {
               finalImageName = "";
             });
           } else {
-            print(serverResponse.statusCode);
+            print('Unexpected error code: ${serverResponse.statusCode}');
           }
 
           setState(() {
