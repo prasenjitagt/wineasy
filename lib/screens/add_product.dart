@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -15,6 +17,9 @@ class AddProducts extends StatefulWidget {
 }
 
 class _AddProductsState extends State<AddProducts> {
+  //to check is form submitting
+  bool isSubmitting = false;
+
   //DropDown Values for Form
   static const List<String> typeOfFood = ["Veg", "Non-Veg"];
   String typeOfFoodValue = "";
@@ -36,7 +41,7 @@ class _AddProductsState extends State<AddProducts> {
 
   //TextEditingControllers for Form
   TextEditingController productName = TextEditingController();
-  TextEditingController producatPrice = TextEditingController();
+  TextEditingController productPrice = TextEditingController();
   TextEditingController productDescription = TextEditingController();
   @override
   Widget build(BuildContext context) {
@@ -107,7 +112,7 @@ class _AddProductsState extends State<AddProducts> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 20.0),
                 child: TextField(
-                  controller: producatPrice,
+                  controller: productPrice,
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(
                       border: OutlineInputBorder(),
@@ -169,8 +174,10 @@ class _AddProductsState extends State<AddProducts> {
                 onTap: () => handleAddProductSubmission(context),
                 splashColor: Colors.red,
                 child: CustomButton(
-                    buttonText: "ADD PRODUCT",
-                    buttonColor: Colors.red.withOpacity(0.9)),
+                  buttonText: "ADD PRODUCT",
+                  buttonColor: Colors.red.withOpacity(0.9),
+                  isSubmitting: isSubmitting,
+                ),
               )
             ],
           ),
@@ -206,11 +213,16 @@ class _AddProductsState extends State<AddProducts> {
     }
   }
 
+//Add Product function
+
   void handleAddProductSubmission(BuildContext context) async {
     try {
       String nameValue = productName.value.text;
-      String priceValue = producatPrice.value.text;
+      String priceValue = (productPrice.value.text);
       String descriptionValue = productDescription.value.text;
+
+      //Coverting the price value to int
+      int? priceValueConvertedToInt = int.tryParse(priceValue);
 
       // If All feilds are not field then if condition will run otherwise else will run
       if (nameValue == "" ||
@@ -219,6 +231,7 @@ class _AddProductsState extends State<AddProducts> {
           finalImageName == "" ||
           typeOfFoodValue == "" ||
           categoryOfFoodValue == "") {
+//Error Snackbar If data is empty
         final formErrorSnackBar = SnackBar(
           duration: const Duration(milliseconds: 800),
           showCloseIcon: true,
@@ -234,31 +247,87 @@ class _AddProductsState extends State<AddProducts> {
         // and use it to show a SnackBar.
         ScaffoldMessenger.of(context).showSnackBar(formErrorSnackBar);
       } else {
-        //call api here
+        //checking is the price value int ?
 
-        Map<String, dynamic> vals = {
-          'name': nameValue,
-          'price': priceValue,
-          'description': descriptionValue,
-          'file':
-              await MultipartFile.fromFile(file.path, filename: fullImageName),
-        };
+        if ((priceValueConvertedToInt.runtimeType) != int) {
+          //Error Snackbar If data is empty
 
-        FormData formData = FormData.fromMap(vals);
+          final priceTypeErrorSnackbar = SnackBar(
+            duration: const Duration(milliseconds: 800),
+            showCloseIcon: true,
+            closeIconColor: Colors.black,
+            backgroundColor: Colors.red.withOpacity(1),
+            content: const Text(
+              'Price Should be a Number !',
+              style: TextStyle(color: Colors.black, fontSize: 30),
+            ),
+          );
 
-        const String url = "http://localhost:4848/api/add-product";
+          // Find the ScaffoldMessenger in the widget tree
+          // and use it to show a SnackBar.
+          ScaffoldMessenger.of(context).showSnackBar(priceTypeErrorSnackbar);
+        } else {
+          //call api here
 
-        Response serverResponse = await Dio().post(url,
-            data: formData,
-            options: Options(
-              contentType: Headers.formUrlEncodedContentType,
-            ), onSendProgress: (int sent, int total) {
-          double doublePercentage = ((sent * 100) / total);
-          String finalPercentage = doublePercentage.toStringAsFixed(2);
-          print('$finalPercentage% done');
-        });
+          setState(() {
+            isSubmitting = true;
+          });
 
-        print(serverResponse);
+          Map<String, dynamic> vals = {
+            'name': nameValue,
+            'price': priceValueConvertedToInt,
+            'description': descriptionValue,
+            'file': await MultipartFile.fromFile(file.path,
+                filename: fullImageName),
+          };
+
+          FormData formData = FormData.fromMap(vals);
+
+          const String url = "http://localhost:4848/api/add-product";
+
+          Response serverResponse = await Dio().post(url,
+              data: formData,
+              options: Options(
+                contentType: Headers.formUrlEncodedContentType,
+              ), onSendProgress: (int sent, int total) {
+            double doublePercentage = ((sent * 100) / total);
+            String finalPercentage = doublePercentage.toStringAsFixed(2);
+            print('$finalPercentage% done');
+          });
+
+//if upload was successfull then
+          if (serverResponse.statusCode == 200) {
+            //snackbar to show that product was added
+            final productAddedSnackBar = SnackBar(
+              duration: const Duration(milliseconds: 800),
+              showCloseIcon: true,
+              closeIconColor: Colors.black,
+              backgroundColor: Colors.green.withOpacity(1),
+              content: const Text(
+                'Product Added Successfully',
+                style: TextStyle(color: Colors.black, fontSize: 30),
+              ),
+            );
+
+            // Find the ScaffoldMessenger in the widget tree and use it to show a SnackBar.
+            ScaffoldMessenger.of(context).showSnackBar(productAddedSnackBar);
+
+            //Clearing the controllers
+            productName.clear();
+            productPrice.clear();
+            productDescription.clear();
+
+            //Resetting dropdown valus
+            setState(() {
+              typeOfFoodValue = "";
+              categoryOfFoodValue = "";
+            });
+          } else {}
+
+          setState(() {
+            isSubmitting = false;
+          });
+        }
       }
     } catch (error) {
       print('Error: $error');
