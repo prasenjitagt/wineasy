@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 import 'package:wineasy/components/custom_button.dart';
 import 'package:wineasy/components/side_nav_bar.dart';
 
@@ -29,7 +30,7 @@ class _AddProductsState extends State<AddProducts> {
 
   //Image Picker Variables
   late File file;
-  String imageFileName = "";
+  String finalImageName = "";
 
   //TextEditingControllers for Form
   TextEditingController productName = TextEditingController();
@@ -93,7 +94,7 @@ class _AddProductsState extends State<AddProducts> {
                         child: Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            'Select Image \n$imageFileName',
+                            'Select Image \n$finalImageName',
                             style: const TextStyle(
                                 color: Colors.black, fontSize: 16),
                           ),
@@ -163,7 +164,7 @@ class _AddProductsState extends State<AddProducts> {
                 ),
               ),
               InkWell(
-                onTap: handleAddProductSubmission,
+                onTap: handleAddProductSubmission(context),
                 splashColor: Colors.red,
                 child: CustomButton(
                     buttonText: "ADD PRODUCT",
@@ -184,12 +185,18 @@ class _AddProductsState extends State<AddProducts> {
       if (result != null) {
         file = File(result.files.single.path!);
         setState(() {
-          imageFileName = '${file.toString().substring(0, 25)}...';
+          String imageName = basename(file.path);
+
+          if (imageName.length < 15) {
+            finalImageName = '$imageName...';
+          }
+
+          finalImageName = '${imageName.substring(0, 15)}...';
         });
       } else {
         // User canceled the picker
         setState(() {
-          imageFileName = 'Please Select Image  !';
+          finalImageName = 'Please Select Image  !';
         });
       }
     } catch (error) {
@@ -197,7 +204,7 @@ class _AddProductsState extends State<AddProducts> {
     }
   }
 
-  void handleAddProductSubmission() {
+  void handleAddProductSubmission(BuildContext context) {
     String nameValue = productName.value.text;
     String priceValue = producatPrice.value.text;
     String descriptionValue = productDescription.value.text;
@@ -206,10 +213,10 @@ class _AddProductsState extends State<AddProducts> {
     if (nameValue == "" ||
         priceValue == "" ||
         descriptionValue == "" ||
-        imageFileName == "" ||
+        finalImageName == "" ||
         typeOfFoodValue == "" ||
         categoryOfFoodValue == "") {
-      final snackBar = SnackBar(
+      final formErrorSnackBar = SnackBar(
         duration: const Duration(milliseconds: 800),
         showCloseIcon: true,
         closeIconColor: Colors.black,
@@ -222,7 +229,7 @@ class _AddProductsState extends State<AddProducts> {
 
       // Find the ScaffoldMessenger in the widget tree
       // and use it to show a SnackBar.
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      ScaffoldMessenger.of(context).showSnackBar(formErrorSnackBar);
     } else {
       //call api here
 
