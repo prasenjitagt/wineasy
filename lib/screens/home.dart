@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:socket_io_client/socket_io_client.dart' as socket_io;
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -12,8 +12,8 @@ class _HomeState extends State<Home> {
   TextEditingController messageFromFlutter = TextEditingController();
   late String incomingData;
 
-  final IO.Socket _socket = IO.io('http://localhost:8080/',
-      IO.OptionBuilder().setTransports(['websocket']).build());
+  final socket_io.Socket _socket = socket_io.io('http://localhost:8080/',
+      socket_io.OptionBuilder().setTransports(['websocket']).build());
 
   _connectSocket() {
     _socket.connect();

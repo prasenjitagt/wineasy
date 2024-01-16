@@ -312,6 +312,8 @@ class _AddProductsState extends State<AddProducts> {
             );
 
             // Find the ScaffoldMessenger in the widget tree and use it to show a SnackBar.
+
+            // ignore: use_build_context_synchronously
             ScaffoldMessenger.of(context).showSnackBar(productAddedSnackBar);
 
             //Clearing the controllers
@@ -324,7 +326,9 @@ class _AddProductsState extends State<AddProducts> {
               file = null;
               finalImageName = "";
             });
-          } else {}
+          } else {
+            print(serverResponse.statusCode);
+          }
 
           setState(() {
             isSubmitting = false;
