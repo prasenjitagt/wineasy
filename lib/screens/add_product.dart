@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
@@ -31,6 +32,7 @@ class _AddProductsState extends State<AddProducts> {
   //Image Picker Variables
   late File file;
   String finalImageName = "";
+  late String fullImageName;
 
   //TextEditingControllers for Form
   TextEditingController productName = TextEditingController();
@@ -96,7 +98,7 @@ class _AddProductsState extends State<AddProducts> {
                           child: Text(
                             'Select Image \n$finalImageName',
                             style: const TextStyle(
-                                color: Colors.black, fontSize: 16),
+                                color: Colors.red, fontSize: 16),
                           ),
                         )),
                   ),
@@ -164,7 +166,7 @@ class _AddProductsState extends State<AddProducts> {
                 ),
               ),
               InkWell(
-                onTap: handleAddProductSubmission(context),
+                onTap: () => handleAddProductSubmission(context),
                 splashColor: Colors.red,
                 child: CustomButton(
                     buttonText: "ADD PRODUCT",
@@ -185,13 +187,13 @@ class _AddProductsState extends State<AddProducts> {
       if (result != null) {
         file = File(result.files.single.path!);
         setState(() {
-          String imageName = basename(file.path);
+          fullImageName = basename(file.path);
 
-          if (imageName.length < 15) {
-            finalImageName = '$imageName...';
+          if (fullImageName.length < 15) {
+            finalImageName = '$fullImageName...';
           }
 
-          finalImageName = '${imageName.substring(0, 15)}...';
+          finalImageName = '${fullImageName.substring(0, 15)}...';
         });
       } else {
         // User canceled the picker
@@ -204,42 +206,62 @@ class _AddProductsState extends State<AddProducts> {
     }
   }
 
-  void handleAddProductSubmission(BuildContext context) {
-    String nameValue = productName.value.text;
-    String priceValue = producatPrice.value.text;
-    String descriptionValue = productDescription.value.text;
+  void handleAddProductSubmission(BuildContext context) async {
+    try {
+      String nameValue = productName.value.text;
+      String priceValue = producatPrice.value.text;
+      String descriptionValue = productDescription.value.text;
 
-    // If All feilds are not field then if condition will run otherwise else will run
-    if (nameValue == "" ||
-        priceValue == "" ||
-        descriptionValue == "" ||
-        finalImageName == "" ||
-        typeOfFoodValue == "" ||
-        categoryOfFoodValue == "") {
-      final formErrorSnackBar = SnackBar(
-        duration: const Duration(milliseconds: 800),
-        showCloseIcon: true,
-        closeIconColor: Colors.black,
-        backgroundColor: Colors.red.withOpacity(1),
-        content: const Text(
-          'All fields are required!',
-          style: TextStyle(color: Colors.black, fontSize: 30),
-        ),
-      );
+      // If All feilds are not field then if condition will run otherwise else will run
+      if (nameValue == "" ||
+          priceValue == "" ||
+          descriptionValue == "" ||
+          finalImageName == "" ||
+          typeOfFoodValue == "" ||
+          categoryOfFoodValue == "") {
+        final formErrorSnackBar = SnackBar(
+          duration: const Duration(milliseconds: 800),
+          showCloseIcon: true,
+          closeIconColor: Colors.black,
+          backgroundColor: Colors.red.withOpacity(1),
+          content: const Text(
+            'All fields are required!',
+            style: TextStyle(color: Colors.black, fontSize: 30),
+          ),
+        );
 
-      // Find the ScaffoldMessenger in the widget tree
-      // and use it to show a SnackBar.
-      ScaffoldMessenger.of(context).showSnackBar(formErrorSnackBar);
-    } else {
-      //call api here
+        // Find the ScaffoldMessenger in the widget tree
+        // and use it to show a SnackBar.
+        ScaffoldMessenger.of(context).showSnackBar(formErrorSnackBar);
+      } else {
+        //call api here
 
-      Map<String, dynamic> vals = {
-        'name': nameValue,
-        'price': priceValue,
-        'description': descriptionValue
-      };
+        Map<String, dynamic> vals = {
+          'name': nameValue,
+          'price': priceValue,
+          'description': descriptionValue,
+          'file':
+              await MultipartFile.fromFile(file.path, filename: fullImageName),
+        };
 
-      print(vals);
+        FormData formData = FormData.fromMap(vals);
+
+        const String url = "http://localhost:4848/api/add-product";
+
+        Response serverResponse = await Dio().post(url,
+            data: formData,
+            options: Options(
+              contentType: Headers.formUrlEncodedContentType,
+            ), onSendProgress: (int sent, int total) {
+          double doublePercentage = ((sent * 100) / total);
+          String finalPercentage = doublePercentage.toStringAsFixed(2);
+          print('$finalPercentage% done');
+        });
+
+        print(serverResponse);
+      }
+    } catch (error) {
+      print('Error: $error');
     }
   }
 }
