@@ -193,14 +193,16 @@ class _AddProductsState extends State<AddProducts> {
 
       if (result != null) {
         file = File(result.files.single.path!);
+
+        //handling the file name
         setState(() {
           fullImageName = basename(file!.path);
 
           if (fullImageName.length < 15) {
             finalImageName = '$fullImageName...';
+          } else {
+            finalImageName = '${fullImageName.substring(0, 14)}...';
           }
-
-          finalImageName = '${fullImageName.substring(0, 15)}...';
         });
       } else {
         // User canceled the picker
