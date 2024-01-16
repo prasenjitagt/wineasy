@@ -35,7 +35,7 @@ class _AddProductsState extends State<AddProducts> {
   String categoryOfFoodValue = "";
 
   //Image Picker Variables
-  late File file;
+  late File? file;
   String finalImageName = "";
   late String fullImageName;
 
@@ -194,7 +194,7 @@ class _AddProductsState extends State<AddProducts> {
       if (result != null) {
         file = File(result.files.single.path!);
         setState(() {
-          fullImageName = basename(file.path);
+          fullImageName = basename(file!.path);
 
           if (fullImageName.length < 15) {
             finalImageName = '$fullImageName...';
@@ -277,7 +277,7 @@ class _AddProductsState extends State<AddProducts> {
             'name': nameValue,
             'price': priceValueConvertedToInt,
             'description': descriptionValue,
-            'file': await MultipartFile.fromFile(file.path,
+            'file': await MultipartFile.fromFile(file!.path,
                 filename: fullImageName),
           };
 
@@ -319,8 +319,8 @@ class _AddProductsState extends State<AddProducts> {
 
             //Resetting dropdown valus
             setState(() {
-              typeOfFoodValue = "";
-              categoryOfFoodValue = "";
+              file = null;
+              finalImageName = "";
             });
           } else {}
 
