@@ -6,15 +6,13 @@ class SingleProductCard extends StatelessWidget {
   final String productType;
   final String productCategory;
   final String productDescription;
-
-  const SingleProductCard({
-    Key? key,
-    required this.productName,
-    required this.productPrice,
-    required this.productType,
-    required this.productCategory,
-    required this.productDescription,
-  }) : super(key: key);
+  const SingleProductCard(
+      {super.key,
+      required this.productName,
+      required this.productPrice,
+      required this.productType,
+      required this.productCategory,
+      required this.productDescription});
 
   @override
   Widget build(BuildContext context) {
@@ -25,40 +23,22 @@ class SingleProductCard extends StatelessWidget {
         child: Container(
           width: MediaQuery.of(context).size.width * 0.5,
           height: 150,
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                  color: Colors.grey, offset: Offset(0, 3), blurRadius: 8.0)
-            ],
-          ),
+          decoration:
+              BoxDecoration(color: Colors.orange.shade200, boxShadow: const [
+            BoxShadow(color: Colors.grey, offset: Offset(0, 3), blurRadius: 8.0)
+          ]),
           child: Center(
-            child: DataTable(
-              columns: [
-                DataColumn(label: Text('Property')),
-                DataColumn(label: Text('Value')),
-              ],
-              rows: [
-                DataRow(cells: [
-                  DataCell(Text('Name')),
-                  DataCell(Text(productName)),
-                ]),
-                DataRow(cells: [
-                  DataCell(Text('Price')),
-                  DataCell(Text(productPrice)),
-                ]),
-                DataRow(cells: [
-                  DataCell(Text('Type')),
-                  DataCell(Text(productType)),
-                ]),
-                DataRow(cells: [
-                  DataCell(Text('Category')),
-                  DataCell(Text(productCategory)),
-                ]),
-                DataRow(cells: [
-                  DataCell(Text('Description')),
-                  DataCell(Text(productDescription)),
-                ]),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Name:$productName'),
+                Divider(
+                  thickness: 2,
+                  color: Colors.orange.shade500,
+                ),
+                Text('Price:$productType'),
+                Text('Name:$productCategory'),
+                Text('Name:$productDescription'),
               ],
             ),
           ),
