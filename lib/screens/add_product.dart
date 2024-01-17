@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print
-
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -287,10 +285,10 @@ class _AddProductsState extends State<AddProducts> {
 
           FormData formData = FormData.fromMap(vals);
 
-          const String url = "http://localhost:4848/api/add-product";
+          const String addProductUrl = "http://localhost:4848/api/add-product";
 
           Response serverResponse = await Dio().post(
-            url,
+            addProductUrl,
             data: formData,
             options: Options(
               contentType: Headers.formUrlEncodedContentType,
