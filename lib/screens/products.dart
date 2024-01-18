@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:wineasy/components/error_card.dart';
 import 'package:wineasy/components/side_nav_bar.dart';
 import 'package:wineasy/components/singleProductCard.dart';
 import 'package:wineasy/models/product_model.dart';
@@ -12,11 +13,14 @@ class Products extends StatefulWidget {
 }
 
 class _ProductsState extends State<Products> {
+  // initializing variable to get products from backend
   late Future<List<ProductModel>> futureProducts;
 
   @override
   void initState() {
     super.initState();
+
+    //calling fetchProductData fucntion to store values that we got from backend
     futureProducts = fetchProductData();
   }
 
@@ -28,6 +32,7 @@ class _ProductsState extends State<Products> {
         backgroundColor: Colors.transparent,
       ),
       body: FutureBuilder(
+        //future builder for loading state
         future: futureProducts,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -37,8 +42,8 @@ class _ProductsState extends State<Products> {
             );
           } else if (snapshot.hasError) {
             // Error state
-            return Center(
-              child: Text('Error loading data: ${snapshot.error}'),
+            return const Center(
+              child: ErrorCard(errorText: "Failed to load data"),
             );
           } else {
             // Data loaded successfully
