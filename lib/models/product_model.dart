@@ -6,8 +6,10 @@ class ProductModel {
   final String typeOfProduct;
   final String categoryOfProduct;
   final String description;
+  final String imageFile;
 
   ProductModel({
+    required this.imageFile,
     required this.productName,
     required this.price,
     required this.typeOfProduct,
@@ -22,6 +24,7 @@ class ProductModel {
       typeOfProduct: json['typeOfProduct'] ?? '',
       categoryOfProduct: json['categoryOfProduct'] ?? '',
       description: json['description'] ?? '',
+      imageFile: json['image'] ?? '',
     );
   }
 }
