@@ -1,8 +1,12 @@
+// ignore_for_file: avoid_print
+
+import 'dart:ffi';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:wineasy/components/error_card.dart';
 import 'package:wineasy/components/side_nav_bar.dart';
-import 'package:wineasy/components/singleProductCard.dart';
+import 'package:wineasy/components/single_product_card.dart';
 import 'package:wineasy/models/product_model.dart';
 
 class Products extends StatefulWidget {
@@ -37,8 +41,12 @@ class _ProductsState extends State<Products> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             // Loading state
-            return const Center(
-              child: CircularProgressIndicator(),
+            return Center(
+              child: CircularProgressIndicator(
+                strokeAlign: CircularProgressIndicator.strokeAlignOutside,
+                strokeWidth: 6,
+                color: Colors.red.shade400,
+              ),
             );
           } else if (snapshot.hasError) {
             // Error state
@@ -50,10 +58,16 @@ class _ProductsState extends State<Products> {
             List<ProductModel> productsList =
                 snapshot.data as List<ProductModel>;
 
-            return SizedBox(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              child: ListView.builder(
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15.0),
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent:
+                        320, // Set the number of columns in the grid
+                    crossAxisSpacing: 15.0, // Set the spacing between columns
+                    mainAxisSpacing: 15.0,
+                    mainAxisExtent: 308 // Set the spacing between rows
+                    ),
                 itemCount: productsList.length,
                 itemBuilder: (context, index) {
                   return SingleProductCard(
@@ -86,7 +100,7 @@ class _ProductsState extends State<Products> {
       return productsList;
     } catch (e) {
       print('Error fetching data: $e');
-      throw e;
+      rethrow;
     }
   }
 }
