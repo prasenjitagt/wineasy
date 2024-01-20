@@ -1,7 +1,5 @@
 // ignore_for_file: avoid_print
 
-import 'dart:ffi';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:wineasy/components/error_card.dart';
@@ -77,6 +75,8 @@ class _ProductsState extends State<Products> {
                     productCategory: productsList[index].categoryOfProduct,
                     productDescription: productsList[index].description,
                     imageFile: productsList[index].imageFile,
+                    productId: productsList[index].productId,
+                    isAvailable: productsList[index].isAvailable,
                   );
                 },
               ),

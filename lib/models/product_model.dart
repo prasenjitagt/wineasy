@@ -1,5 +1,7 @@
 // product_model.dart
 
+import 'dart:ffi';
+
 class ProductModel {
   final String productName;
   final String price;
@@ -7,8 +9,12 @@ class ProductModel {
   final String categoryOfProduct;
   final String description;
   final String imageFile;
+  final String productId;
+  final bool isAvailable;
 
   ProductModel({
+    required this.isAvailable,
+    required this.productId,
     required this.imageFile,
     required this.productName,
     required this.price,
@@ -25,6 +31,8 @@ class ProductModel {
       categoryOfProduct: json['categoryOfProduct'] ?? '',
       description: json['description'] ?? '',
       imageFile: json['image'] ?? '',
+      productId: json['_id'] ?? 'no_id',
+      isAvailable: json['isAvailable'] ?? true,
     );
   }
 }

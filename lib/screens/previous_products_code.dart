@@ -63,6 +63,8 @@ class _ProductsState extends State<Products> {
                     productCategory: productsList[index].categoryOfProduct,
                     productDescription: productsList[index].description,
                     imageFile: productsList[index].imageFile,
+                    productId: productsList[index].productId,
+                    isAvailable: productsList[index].isAvailable,
                   );
                 },
               ),
