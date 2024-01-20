@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:wineasy/components/custom_button.dart';
+import 'package:wineasy/components/error_card.dart';
 import 'package:wineasy/components/side_nav_bar.dart';
 
 class AddProducts extends StatefulWidget {
@@ -293,12 +294,6 @@ class _AddProductsState extends State<AddProducts> {
             options: Options(
               contentType: Headers.formUrlEncodedContentType,
             ),
-
-            //      onSendProgress: (int sent, int total) {
-            //   double doublePercentage = ((sent * 100) / total);
-            //   String finalPercentage = doublePercentage.toStringAsFixed(2);
-            //   print('$finalPercentage% done');
-            // }
           );
 
 //if upload was successfull then
@@ -315,8 +310,6 @@ class _AddProductsState extends State<AddProducts> {
               ),
             );
 
-            // Find the ScaffoldMessenger in the widget tree and use it to show a SnackBar.
-
             // ignore: use_build_context_synchronously
             ScaffoldMessenger.of(context).showSnackBar(productAddedSnackBar);
 
@@ -331,16 +324,21 @@ class _AddProductsState extends State<AddProducts> {
               finalImageName = "";
             });
           } else {
-            print('Unexpected error code: ${serverResponse.statusCode}');
-          }
+      // ignore: use_build_context_synchronously
+      Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => const ErrorCard(errorText: 'Adding Product Failed');))
 
-          setState(() {
-            isSubmitting = false;
-          });
+          }
         }
       }
     } catch (error) {
-      print('Error: $error');
+      // ignore: use_build_context_synchronously
+      Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => const ErrorCard(errorText: 'Adding Product Failed');))
+
+
+    } finally {
+      setState(() {
+        isSubmitting = false;
+      });
     }
   }
 }

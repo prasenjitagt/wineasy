@@ -1,12 +1,12 @@
-import 'dart:ffi';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
-//for the image
+//import for the image
 import 'package:image/image.dart' as img;
 import 'dart:convert';
 import 'dart:typed_data';
+
+import 'package:wineasy/screens/product_description.dart';
 
 class SingleProductCard extends StatefulWidget {
   final String productName;
@@ -159,7 +159,7 @@ class _SingleProductCardState extends State<SingleProductCard> {
               Padding(
                 padding: const EdgeInsets.only(right: 10.0),
                 child: IconButton(
-                    onPressed: () {},
+                    onPressed: handleEditClick,
                     icon: const Icon(
                       Icons.edit_document,
                       color: Color.fromARGB(255, 241, 37, 37),
@@ -190,6 +190,24 @@ class _SingleProductCardState extends State<SingleProductCard> {
       print('Error fetching data: $e');
       rethrow;
     }
+  }
+
+  //Fucntion for clicking the edit icon
+  void handleEditClick() {
+    img.Image? decodedImage = base64StringToImage(widget.imageFile);
+
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (context) => ProductDescription(
+                productName: widget.productName,
+                productPrice: widget.productPrice,
+                productType: widget.productType,
+                productCategory: widget.productCategory,
+                productDescription: widget.productDescription,
+                decodedImage: decodedImage as img.Image,
+                productId: widget.productId,
+                isProductAvailable: isProductAvailable)));
   }
 }
 
