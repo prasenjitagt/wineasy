@@ -39,13 +39,11 @@ class _ProductsState extends State<Products> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             // Loading state
-            return Center(
-              child: CircularProgressIndicator(
-                strokeAlign: CircularProgressIndicator.strokeAlignOutside,
-                strokeWidth: 6,
-                color: Colors.red.shade400,
-              ),
-            );
+            return const Center(
+                child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8.0),
+              child: LinearProgressIndicator(),
+            ));
           } else if (snapshot.hasError) {
             // Error state
             return const Center(

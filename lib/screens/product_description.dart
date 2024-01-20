@@ -58,94 +58,111 @@ class _ProductDescriptionState extends State<ProductDescription> {
             icon: const Icon(Icons.arrow_back)),
         backgroundColor: Colors.transparent,
       ),
-      body: Center(
-          child: Container(
-        decoration: BoxDecoration(
-            // border: Border.all(width: 2, color: Colors.black),
-            borderRadius: BorderRadius.circular(10),
-            color: Colors.grey.shade200),
-        child: Column(
-          children: [
-            //1st widget in column
-            SizedBox(
-                height: 169,
-                width: 320,
-                child: ColorFiltered(
-                  colorFilter: ColorFilter.mode(
-                    imageColor,
-                    BlendMode.color,
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.memory(
-                      Uint8List.fromList(img.encodePng(widget.decodedImage)),
-                      fit: BoxFit.cover,
+      body: Row(
+        children: [
+          Container(
+            width: 450,
+            decoration: BoxDecoration(
+                border: const Border(
+                    right: BorderSide(width: 3, color: Colors.black)),
+                color: Colors.grey.shade200),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                //1st widget in column
+                SizedBox(
+                    height: 169,
+                    width: 320,
+                    child: ColorFiltered(
+                      colorFilter: ColorFilter.mode(
+                        imageColor,
+                        BlendMode.color,
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.memory(
+                          Uint8List.fromList(
+                              img.encodePng(widget.decodedImage)),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    )),
+
+                //2nd widget in column
+                const SizedBox(
+                  height: 15,
+                ),
+
+                //3rd widget in column
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 60.0),
+                    child: Text(
+                      widget.productName,
+                      maxLines: 2,
+                      softWrap: true,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 20,
+                      ),
                     ),
                   ),
-                )),
-
-            //2nd widget in column
-            const SizedBox(
-              height: 15,
-            ),
-
-            //3rd widget in column
-            Padding(
-              padding: const EdgeInsets.only(left: 35.0),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Text(
-                  widget.productName,
-                  maxLines: 2,
-                  softWrap: true,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 20,
-                  ),
                 ),
-              ),
-            ),
 
-            //4th widget in column
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 35.0),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  widget.productDescription,
-                  maxLines: 1,
-                  softWrap: true,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 13,
-                  ),
-                ),
-              ),
-            ),
-
-            //5th widget in column
-            const SizedBox(
-              height: 15,
-            ),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
+                //4th widget in column
                 Padding(
-                  padding: const EdgeInsets.only(left: 35.0),
-                  child: Text(
-                    formattedPrice,
-                    style: TextStyle(
-                        color: Colors.green.shade500,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600),
+                  padding: const EdgeInsets.symmetric(horizontal: 60.0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      widget.productDescription,
+                      maxLines: 1,
+                      softWrap: true,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 13,
+                      ),
+                    ),
                   ),
                 ),
+
+                //5th widget in column
+                const SizedBox(
+                  height: 15,
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 60.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        formattedPrice,
+                        style: TextStyle(
+                            color: Colors.green.shade500,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600),
+                      ),
+                      IconButton(
+                          onPressed: handleDeleteClick,
+                          icon: const Icon(
+                            Icons.delete_forever,
+                            color: Color.fromARGB(255, 241, 37, 37),
+                          ))
+                    ],
+                  ),
+                )
               ],
-            )
-          ],
-        ),
-      )),
+            ),
+          ),
+          const Center(
+            child: Text('data'),
+          )
+        ],
+      ),
     );
   }
+
+  void handleDeleteClick() {}
 }
