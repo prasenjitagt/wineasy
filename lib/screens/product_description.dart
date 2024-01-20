@@ -78,7 +78,7 @@ class _ProductDescriptionState extends State<ProductDescription> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: Image.memory(
-                      Uint8List.fromList(img.encodePng(widget.decodedImage!)),
+                      Uint8List.fromList(img.encodePng(widget.decodedImage)),
                       fit: BoxFit.cover,
                     ),
                   ),

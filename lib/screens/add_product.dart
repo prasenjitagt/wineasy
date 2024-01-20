@@ -232,7 +232,7 @@ class _AddProductsState extends State<AddProducts> {
           finalImageName == "" ||
           typeOfFoodValue == "" ||
           categoryOfFoodValue == "") {
-//Error Snackbar If data is empty
+        //Error Snackbar If data is empty
         final formErrorSnackBar = SnackBar(
           duration: const Duration(milliseconds: 800),
           showCloseIcon: true,
@@ -324,17 +324,22 @@ class _AddProductsState extends State<AddProducts> {
               finalImageName = "";
             });
           } else {
-      // ignore: use_build_context_synchronously
-      Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => const ErrorCard(errorText: 'Adding Product Failed');))
-
+            // ignore: use_build_context_synchronously
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        const ErrorCard(errorText: 'Adding Product Failed')));
           }
         }
       }
     } catch (error) {
       // ignore: use_build_context_synchronously
-      Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => const ErrorCard(errorText: 'Adding Product Failed');))
-
-
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  const ErrorCard(errorText: 'Adding Product Failed')));
     } finally {
       setState(() {
         isSubmitting = false;
