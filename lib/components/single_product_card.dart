@@ -90,31 +90,34 @@ class _SingleProductCardState extends State<SingleProductCard> {
           //3rd widget in column
           Padding(
             padding: const EdgeInsets.only(left: 35.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                //1st widget in row
-                SizedBox(
-                  width: 180,
-                  child: Text(
-                    widget.productName,
-                    maxLines: 1,
-                    softWrap: true,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 20,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  //1st widget in row
+                  SizedBox(
+                    width: 180,
+                    child: Text(
+                      widget.productName,
+                      maxLines: 1,
+                      softWrap: true,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 20,
+                      ),
                     ),
                   ),
-                ),
 
-                //2nd widget in row Switch
-                Transform.scale(
-                    scale: 0.5,
-                    child: Switch(
-                        activeColor: Colors.green.shade600,
-                        value: isProductAvailable,
-                        onChanged: updateIsAvailable))
-              ],
+                  //2nd widget in row Switch
+                  Transform.scale(
+                      scale: 0.5,
+                      child: Switch(
+                          activeColor: Colors.green.shade600,
+                          value: isProductAvailable,
+                          onChanged: updateIsAvailable))
+                ],
+              ),
             ),
           ),
 
