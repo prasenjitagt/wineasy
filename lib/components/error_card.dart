@@ -3,8 +3,14 @@ import 'package:wineasy/screens/dashboard.dart';
 
 class ErrorCard extends StatelessWidget {
   final String errorText;
+  final String destinationWidgetName;
+  final Widget destinationWidget;
 
-  const ErrorCard({super.key, required this.errorText});
+  const ErrorCard(
+      {super.key,
+      required this.errorText,
+      required this.destinationWidgetName,
+      required this.destinationWidget});
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +60,7 @@ class ErrorCard extends StatelessWidget {
             TextButton(
               onPressed: () {
                 Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => const Dashboard()));
+                    MaterialPageRoute(builder: (context) => destinationWidget));
               },
               style: TextButton.styleFrom(
                   shape: RoundedRectangleBorder(
@@ -62,8 +68,8 @@ class ErrorCard extends StatelessWidget {
                   fixedSize: const Size(150, 20),
                   backgroundColor: const Color.fromARGB(255, 79, 223, 248),
                   textStyle: const TextStyle(fontSize: 20)),
-              child: const Text(
-                "Go To Dashboard",
+              child: Text(
+                "Go To $destinationWidgetName",
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 15,

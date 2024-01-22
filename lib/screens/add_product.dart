@@ -7,6 +7,7 @@ import 'package:path/path.dart';
 import 'package:wineasy/components/custom_button.dart';
 import 'package:wineasy/components/error_card.dart';
 import 'package:wineasy/components/side_nav_bar.dart';
+import 'package:wineasy/screens/dashboard.dart';
 
 class AddProducts extends StatefulWidget {
   const AddProducts({super.key});
@@ -328,8 +329,12 @@ class _AddProductsState extends State<AddProducts> {
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>
-                        const ErrorCard(errorText: 'Adding Product Failed')));
+                    builder: (context) => const ErrorCard(
+                          errorText:
+                              'Adding Product Failed\nGo to Dashboard and retry',
+                          destinationWidgetName: 'Dashboard',
+                          destinationWidget: Dashboard(),
+                        )));
           }
         }
       }
@@ -338,8 +343,12 @@ class _AddProductsState extends State<AddProducts> {
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-              builder: (context) =>
-                  const ErrorCard(errorText: 'Adding Product Failed')));
+              builder: (context) => const ErrorCard(
+                    errorText:
+                        'Adding Product Failed\nGo to Dashboard and retry',
+                    destinationWidgetName: 'Dashboard',
+                    destinationWidget: Dashboard(),
+                  )));
     } finally {
       setState(() {
         isSubmitting = false;

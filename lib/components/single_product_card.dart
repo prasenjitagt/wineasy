@@ -196,20 +196,7 @@ class _SingleProductCardState extends State<SingleProductCard> {
   void handleEditClick() {
     img.Image? decodedImage = base64StringToImage(widget.imageFile);
 
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => ProductDescription(
-                productName: widget.productName,
-                productPrice: widget.productPrice,
-                productType: widget.productType,
-                productCategory: widget.productCategory,
-                productDescription: widget.productDescription,
-                decodedImage: decodedImage as img.Image,
-                productId: widget.productId,
-                isProductAvailable: isProductAvailable)));
-
-    // Navigator.pushReplacement(
+    // Navigator.push(
     //     context,
     //     MaterialPageRoute(
     //         builder: (context) => ProductDescription(
@@ -221,6 +208,19 @@ class _SingleProductCardState extends State<SingleProductCard> {
     //             decodedImage: decodedImage as img.Image,
     //             productId: widget.productId,
     //             isProductAvailable: isProductAvailable)));
+
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (context) => ProductDescription(
+                productName: widget.productName,
+                productPrice: widget.productPrice,
+                productType: widget.productType,
+                productCategory: widget.productCategory,
+                productDescription: widget.productDescription,
+                decodedImage: decodedImage as img.Image,
+                productId: widget.productId,
+                isProductAvailable: isProductAvailable)));
   }
 }
 

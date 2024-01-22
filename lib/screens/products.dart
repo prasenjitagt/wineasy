@@ -2,11 +2,12 @@
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:wineasy/components/error_card.dart';
 import 'package:wineasy/components/side_nav_bar.dart';
 import 'package:wineasy/components/single_product_card.dart';
 import 'package:wineasy/models/product_model.dart';
+import 'package:wineasy/screens/add_product.dart';
+import 'package:wineasy/screens/dashboard.dart';
 
 class Products extends StatefulWidget {
   const Products({Key? key}) : super(key: key);
@@ -48,7 +49,11 @@ class _ProductsState extends State<Products> {
           } else if (snapshot.hasError) {
             // Error state
             return const Center(
-              child: ErrorCard(errorText: "Failed to load data"),
+              child: ErrorCard(
+                errorText: "Failed to load data",
+                destinationWidgetName: 'Dashboard',
+                destinationWidget: Dashboard(),
+              ),
             );
           } else {
             // Data loaded successfully
@@ -56,7 +61,11 @@ class _ProductsState extends State<Products> {
                 snapshot.data as List<ProductModel>;
             if (productsList.isEmpty == true) {
               return const Center(
-                  child: ErrorCard(errorText: "No Products Yet"));
+                  child: ErrorCard(
+                errorText: "No Products Yet",
+                destinationWidget: AddProducts(),
+                destinationWidgetName: 'Add Product',
+              ));
             } else {
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15.0),

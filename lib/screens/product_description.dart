@@ -57,10 +57,10 @@ class _ProductDescriptionState extends State<ProductDescription> {
       appBar: AppBar(
         leading: IconButton(
             onPressed: () {
-              Navigator.pop(context);
+              // Navigator.pop(context);
 
-              // Navigator.pushReplacement(context,
-              //     MaterialPageRoute(builder: (context) => const Products()));
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => const Products()));
             },
             icon: const Icon(Icons.arrow_back)),
         backgroundColor: Colors.transparent,
