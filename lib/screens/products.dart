@@ -2,10 +2,12 @@
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:wineasy/components/error_card.dart';
 import 'package:wineasy/components/side_nav_bar.dart';
 import 'package:wineasy/components/single_product_card.dart';
 import 'package:wineasy/models/product_model.dart';
+import 'package:wineasy/providers/is_products_changed_provider.dart';
 
 class Products extends StatefulWidget {
   const Products({Key? key}) : super(key: key);
@@ -21,7 +23,6 @@ class _ProductsState extends State<Products> {
   @override
   void initState() {
     super.initState();
-
     //calling fetchProductData fucntion to store values that we got from backend
     futureProducts = fetchProductData();
   }
@@ -33,56 +34,58 @@ class _ProductsState extends State<Products> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
       ),
-      body: FutureBuilder(
-        //future builder for loading state
-        future: futureProducts,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            // Loading state
-            return const Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 30.0),
-                child: LinearProgressIndicator(),
-              ),
-            );
-          } else if (snapshot.hasError) {
-            // Error state
-            return const Center(
-              child: ErrorCard(errorText: "Failed to load data"),
-            );
-          } else {
-            // Data loaded successfully
-            List<ProductModel> productsList =
-                snapshot.data as List<ProductModel>;
+      body: Consumer(builder: (context, isProductChangedProviderModel, child) {
+        return FutureBuilder(
+          //future builder for loading state
+          future: futureProducts,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              // Loading state
+              return const Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 30.0),
+                  child: LinearProgressIndicator(),
+                ),
+              );
+            } else if (snapshot.hasError) {
+              // Error state
+              return const Center(
+                child: ErrorCard(errorText: "Failed to load data"),
+              );
+            } else {
+              // Data loaded successfully
+              List<ProductModel> productsList =
+                  snapshot.data as List<ProductModel>;
 
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15.0),
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent:
-                        320, // Set the number of columns in the grid
-                    crossAxisSpacing: 15.0, // Set the spacing between columns
-                    mainAxisSpacing: 15.0,
-                    mainAxisExtent: 308 // Set the spacing between rows
-                    ),
-                itemCount: productsList.length,
-                itemBuilder: (context, index) {
-                  return SingleProductCard(
-                    productName: productsList[index].productName,
-                    productPrice: productsList[index].price,
-                    productType: productsList[index].typeOfProduct,
-                    productCategory: productsList[index].categoryOfProduct,
-                    productDescription: productsList[index].description,
-                    imageFile: productsList[index].imageFile,
-                    productId: productsList[index].productId,
-                    isAvailable: productsList[index].isAvailable,
-                  );
-                },
-              ),
-            );
-          }
-        },
-      ),
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                      maxCrossAxisExtent:
+                          320, // Set the number of columns in the grid
+                      crossAxisSpacing: 15.0, // Set the spacing between columns
+                      mainAxisSpacing: 15.0,
+                      mainAxisExtent: 308 // Set the spacing between rows
+                      ),
+                  itemCount: productsList.length,
+                  itemBuilder: (context, index) {
+                    return SingleProductCard(
+                      productName: productsList[index].productName,
+                      productPrice: productsList[index].price,
+                      productType: productsList[index].typeOfProduct,
+                      productCategory: productsList[index].categoryOfProduct,
+                      productDescription: productsList[index].description,
+                      imageFile: productsList[index].imageFile,
+                      productId: productsList[index].productId,
+                      isAvailable: productsList[index].isAvailable,
+                    );
+                  },
+                ),
+              );
+            }
+          },
+        );
+      }),
     );
   }
 
@@ -95,7 +98,7 @@ class _ProductsState extends State<Products> {
       List<ProductModel> productsList = (serverResponse.data as List<dynamic>)
           .map((productData) => ProductModel.fromJson(productData))
           .toList();
-
+      context.read<IsProductChangedProvider>().changeIsTheProductChanged();
       return productsList;
     } catch (e) {
       print('Error fetching data: $e');
