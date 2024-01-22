@@ -9,14 +9,14 @@ import 'package:wineasy/components/error_card.dart';
 import 'package:wineasy/components/side_nav_bar.dart';
 import 'package:wineasy/screens/dashboard.dart';
 
-class AddProducts extends StatefulWidget {
-  const AddProducts({super.key});
+class AddProduct extends StatefulWidget {
+  const AddProduct({super.key});
 
   @override
-  State<AddProducts> createState() => _AddProductsState();
+  State<AddProduct> createState() => _AddProducttate();
 }
 
-class _AddProductsState extends State<AddProducts> {
+class _AddProducttate extends State<AddProduct> {
   //to check is form submitting
   bool isSubmitting = false;
 
@@ -170,7 +170,7 @@ class _AddProductsState extends State<AddProducts> {
                 ),
               ),
               InkWell(
-                onTap: () => handleAddProductSubmission(context),
+                onTap: () => handleAddProductubmission(context),
                 splashColor: Colors.red,
                 child: CustomButton(
                   buttonText: "ADD PRODUCT",
@@ -216,7 +216,7 @@ class _AddProductsState extends State<AddProducts> {
 
 //ADD PRODUCT function
 
-  void handleAddProductSubmission(BuildContext context) async {
+  void handleAddProductubmission(BuildContext context) async {
     try {
       String nameValue = productName.value.text;
       String priceValue = (productPrice.value.text);
@@ -225,7 +225,7 @@ class _AddProductsState extends State<AddProducts> {
       //Coverting the price value to int
       int? priceValueConvertedToInt = int.tryParse(priceValue);
 
-      // If All feilds are not field then if condition will run otherwise else will run
+      // If All feilds are not filled then if condition will run otherwise else will run
       if (nameValue == "" ||
           priceValue == "" ||
           descriptionValue == "" ||

@@ -61,7 +61,7 @@ class _ProductsState extends State<Products> {
               return const Center(
                   child: ErrorCard(
                 errorText: "No Products Yet",
-                destinationWidget: AddProducts(),
+                destinationWidget: AddProduct(),
                 destinationWidgetName: 'Add Product',
               ));
             } else {

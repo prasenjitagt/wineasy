@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wineasy/components/nav_bar_links.dart';
+import 'package:wineasy/screens/add_category.dart';
 import 'package:wineasy/screens/add_product.dart';
 import 'package:wineasy/screens/dashboard.dart';
 import 'package:wineasy/screens/orders.dart';
@@ -22,7 +23,7 @@ class SideNavBar extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => const Dashboard()));
             },
             child: const NavBarLinks(
-              navLinkIcon: Icons.dashboard,
+              navLinkIcon: Icons.dashboard_outlined,
               navLinkName: "Dashboard",
             ),
           ),
@@ -32,14 +33,14 @@ class SideNavBar extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => const Products()));
             },
             child: const NavBarLinks(
-              navLinkIcon: Icons.dining,
+              navLinkIcon: Icons.dining_outlined,
               navLinkName: "Your Products",
             ),
           ),
           InkWell(
             onTap: () {
               Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => const AddProducts()));
+                  MaterialPageRoute(builder: (context) => const AddProduct()));
             },
             child: const NavBarLinks(
               navLinkIcon: Icons.add_to_queue,
@@ -49,10 +50,20 @@ class SideNavBar extends StatelessWidget {
           InkWell(
             onTap: () {
               Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => const AddCategory()));
+            },
+            child: const NavBarLinks(
+              navLinkIcon: Icons.addchart_outlined,
+              navLinkName: "Add Category",
+            ),
+          ),
+          InkWell(
+            onTap: () {
+              Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (context) => const Orders()));
             },
             child: const NavBarLinks(
-              navLinkIcon: Icons.analytics,
+              navLinkIcon: Icons.analytics_outlined,
               navLinkName: "Orders",
             ),
           ),
@@ -62,7 +73,7 @@ class SideNavBar extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => const Sales()));
             },
             child: const NavBarLinks(
-              navLinkIcon: Icons.business_center,
+              navLinkIcon: Icons.business_center_outlined,
               navLinkName: "Sales",
             ),
           ),
