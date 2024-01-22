@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:wineasy/screens/dashboard.dart';
 
 class ErrorCard extends StatelessWidget {
   final String errorText;
