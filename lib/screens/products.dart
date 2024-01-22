@@ -31,9 +31,7 @@ class _ProductsState extends State<Products> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const SideNavBar(),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-      ),
+      appBar: AppBar(),
       body: FutureBuilder(
         //future builder for loading state
         future: futureProducts,
