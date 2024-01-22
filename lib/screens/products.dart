@@ -7,7 +7,6 @@ import 'package:wineasy/components/error_card.dart';
 import 'package:wineasy/components/side_nav_bar.dart';
 import 'package:wineasy/components/single_product_card.dart';
 import 'package:wineasy/models/product_model.dart';
-import 'package:wineasy/providers/is_products_changed_provider.dart';
 
 class Products extends StatefulWidget {
   const Products({Key? key}) : super(key: key);
@@ -34,29 +33,31 @@ class _ProductsState extends State<Products> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
       ),
-      body: Consumer(builder: (context, isProductChangedProviderModel, child) {
-        return FutureBuilder(
-          //future builder for loading state
-          future: futureProducts,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              // Loading state
+      body: FutureBuilder(
+        //future builder for loading state
+        future: futureProducts,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            // Loading state
+            return const Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 30.0),
+                child: LinearProgressIndicator(),
+              ),
+            );
+          } else if (snapshot.hasError) {
+            // Error state
+            return const Center(
+              child: ErrorCard(errorText: "Failed to load data"),
+            );
+          } else {
+            // Data loaded successfully
+            List<ProductModel> productsList =
+                snapshot.data as List<ProductModel>;
+            if (productsList.isEmpty == true) {
               return const Center(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 30.0),
-                  child: LinearProgressIndicator(),
-                ),
-              );
-            } else if (snapshot.hasError) {
-              // Error state
-              return const Center(
-                child: ErrorCard(errorText: "Failed to load data"),
-              );
+                  child: ErrorCard(errorText: "No Products Yet"));
             } else {
-              // Data loaded successfully
-              List<ProductModel> productsList =
-                  snapshot.data as List<ProductModel>;
-
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15.0),
                 child: GridView.builder(
@@ -83,9 +84,9 @@ class _ProductsState extends State<Products> {
                 ),
               );
             }
-          },
-        );
-      }),
+          }
+        },
+      ),
     );
   }
 
@@ -94,14 +95,19 @@ class _ProductsState extends State<Products> {
 
     try {
       Response serverResponse = await Dio().get(getProductsUrl);
+      if (serverResponse.data.runtimeType == List) {
+        // Process the data
+        List<ProductModel> productsList = (serverResponse.data as List<dynamic>)
+            .map((productData) => ProductModel.fromJson(productData))
+            .toList();
 
-      List<ProductModel> productsList = (serverResponse.data as List<dynamic>)
-          .map((productData) => ProductModel.fromJson(productData))
-          .toList();
-      context.read<IsProductChangedProvider>().changeIsTheProductChanged();
-      return productsList;
+        return productsList;
+      } else {
+        return List.empty();
+      }
     } catch (e) {
       print('Error fetching data: $e');
+
       rethrow;
     }
   }
