@@ -56,22 +56,27 @@ class ErrorCard extends StatelessWidget {
             const SizedBox(
               height: 15,
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => destinationWidget));
-              },
-              style: TextButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4)),
-                  fixedSize: const Size(150, 20),
-                  backgroundColor: const Color.fromARGB(255, 79, 223, 248),
-                  textStyle: const TextStyle(fontSize: 20)),
-              child: Text(
-                "Go To $destinationWidgetName",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 15,
+            Container(
+              width: 150,
+              height: 40,
+              decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 79, 223, 248),
+                  borderRadius: BorderRadius.circular(4)),
+              child: InkWell(
+                onTap: () {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => destinationWidget));
+                },
+                child: Center(
+                  child: Text(
+                    "Go To $destinationWidgetName",
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 15,
+                    ),
+                  ),
                 ),
               ),
             )

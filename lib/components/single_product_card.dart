@@ -178,8 +178,11 @@ class _SingleProductCardState extends State<SingleProductCard> {
         isProductAvailable = value;
       });
 
+      //encoding the Product ID in base64
       String encodedString = base64Encode(utf8.encode(widget.productId));
+
       const String isAvailableUrl = "http://localhost:4848/api/is-available";
+
       Response serverResponse =
           await Dio().put(isAvailableUrl, queryParameters: {
         'productId': encodedString,

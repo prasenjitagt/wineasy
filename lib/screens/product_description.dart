@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:wineasy/components/edit_product.dart';
 import 'package:wineasy/components/side_nav_bar.dart';
 
 //import for the image
@@ -68,11 +69,11 @@ class _ProductDescriptionState extends State<ProductDescription> {
       body: Row(
         children: [
           Container(
-            width: 450,
+            width: MediaQuery.of(context).size.width / 2,
             decoration: BoxDecoration(
                 border: const Border(
                     right: BorderSide(width: 3, color: Colors.black)),
-                color: Colors.grey.shade200),
+                color: Colors.red.shade50),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -101,10 +102,10 @@ class _ProductDescriptionState extends State<ProductDescription> {
                 ),
 
                 //3rd widget in column
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 60.0),
+                SizedBox(
+                  width: 320,
+                  child: Align(
+                    alignment: Alignment.centerLeft,
                     child: Text(
                       widget.productName,
                       maxLines: 2,
@@ -118,8 +119,8 @@ class _ProductDescriptionState extends State<ProductDescription> {
                 ),
 
                 //4th widget in column
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 60.0),
+                SizedBox(
+                  width: 320,
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
@@ -139,8 +140,8 @@ class _ProductDescriptionState extends State<ProductDescription> {
                   height: 15,
                 ),
 
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 60.0),
+                SizedBox(
+                  width: 320,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -163,9 +164,16 @@ class _ProductDescriptionState extends State<ProductDescription> {
               ],
             ),
           ),
-          const Center(
-            child: Text('data'),
-          )
+
+          // 2nd Widget in Row
+
+          SizedBox(
+              width: MediaQuery.of(context).size.width / 2,
+              child: Align(
+                  alignment: Alignment.center,
+                  child: EditProducts(
+                    productId: widget.productId,
+                  )))
         ],
       ),
     );
