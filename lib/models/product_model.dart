@@ -1,7 +1,4 @@
 // product_model.dart
-
-import 'dart:ffi';
-
 class ProductModel {
   final String productName;
   final String price;
