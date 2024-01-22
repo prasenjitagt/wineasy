@@ -113,11 +113,14 @@ class _AddCategoryState extends State<AddCategory> {
           isSubmitting = true;
         });
 
-        const String addCategoryUrl = "http://localhost:4848/api/add-product";
+        const String addCategoryUrl = "http://localhost:4848/api/add-category";
+
+        //converting category data to json
+        Map<String, dynamic> val = {'category': categoryValue};
 
         Response serverResponse = await Dio().post(
           addCategoryUrl,
-          data: categoryValue,
+          data: val,
         );
 
         //if upload was successfull then
