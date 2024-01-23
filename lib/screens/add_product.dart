@@ -7,6 +7,7 @@ import 'package:path/path.dart';
 import 'package:wineasy/components/custom_button.dart';
 import 'package:wineasy/components/error_card.dart';
 import 'package:wineasy/components/side_nav_bar.dart';
+import 'package:wineasy/models/category_model.dart';
 import 'package:wineasy/screens/dashboard.dart';
 
 class AddProduct extends StatefulWidget {
@@ -17,6 +18,25 @@ class AddProduct extends StatefulWidget {
 }
 
 class _AddProducttate extends State<AddProduct> {
+  // initializing variable to get products from backend
+  late Future<List<CategoryModel>> categoryOfFood;
+
+  //variable for holding Category Values
+  late List<CategoryModel> categoryNames = [];
+
+  @override
+  void initState() {
+    super.initState();
+    categoryOfFood = fetchCategories();
+
+    // Wait for the categoryOfFood Future to complete and populate categoryNames
+    categoryOfFood.then((categories) {
+      setState(() {
+        categoryNames = categories.map((category) => category).toList();
+      });
+    });
+  }
+
   //to check is form submitting
   bool isSubmitting = false;
 
@@ -25,7 +45,7 @@ class _AddProducttate extends State<AddProduct> {
   String typeOfFoodValue = "";
 
   //DropDown Values for Form
-  static const List<String> categoryOfFood = [
+  static const List<String> categoryOfFooddepri = [
     "BIRYANI",
     "PIZZA",
     "ICE CREAME",
@@ -42,6 +62,7 @@ class _AddProducttate extends State<AddProduct> {
   TextEditingController productName = TextEditingController();
   TextEditingController productPrice = TextEditingController();
   TextEditingController productDescription = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -128,17 +149,19 @@ class _AddProducttate extends State<AddProduct> {
                       child: DropdownMenu(
                           width: MediaQuery.of(context).size.width * 0.19,
                           hintText: "Select Category",
-                          onSelected: (String? value) {
+                          onSelected: (CategoryModel? value) {
                             setState(() {
                               if (value != null) {
-                                categoryOfFoodValue = value;
+                                categoryOfFoodValue = value.categoryOfFood;
                               }
                             });
                           },
-                          dropdownMenuEntries: categoryOfFood
-                              .map<DropdownMenuEntry<String>>((eachType) {
-                            return DropdownMenuEntry<String>(
-                                value: eachType, label: eachType);
+                          dropdownMenuEntries: categoryNames
+                              .map<DropdownMenuEntry<CategoryModel>>(
+                                  (eachType) {
+                            return DropdownMenuEntry<CategoryModel>(
+                                value: eachType,
+                                label: eachType.categoryOfFood);
                           }).toList()),
                     ),
                     DropdownMenu(
@@ -183,6 +206,30 @@ class _AddProducttate extends State<AddProduct> {
         ),
       ),
     );
+  }
+
+  Future<List<CategoryModel>> fetchCategories() async {
+    const String getProductsUrl = "http://localhost:4848/api/get-categories";
+
+    try {
+      Response serverResponse = await Dio().get(getProductsUrl);
+
+      if (serverResponse.data.runtimeType == List) {
+        // Process the data
+        List<CategoryModel> productsList =
+            (serverResponse.data as List<dynamic>)
+                .map((productData) => CategoryModel.fromJson(productData))
+                .toList();
+
+        return productsList;
+      } else {
+        return List.empty();
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+
+      rethrow;
+    }
   }
 
   void imagePick() async {
