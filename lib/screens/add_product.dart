@@ -24,6 +24,9 @@ class _AddProducttate extends State<AddProduct> {
   //variable for holding Category Values
   late List<CategoryModel> categoryNames = [];
 
+  //variable for storing the value of category selected
+  String categoryOfFoodValue = "";
+
   @override
   void initState() {
     super.initState();
@@ -43,15 +46,6 @@ class _AddProducttate extends State<AddProduct> {
   //DropDown Values for Form
   static const List<String> typeOfFood = ["Veg", "Non-Veg"];
   String typeOfFoodValue = "";
-
-  //DropDown Values for Form
-  static const List<String> categoryOfFooddepri = [
-    "BIRYANI",
-    "PIZZA",
-    "ICE CREAME",
-    "PARATHA"
-  ];
-  String categoryOfFoodValue = "";
 
   //Image Picker Variables
   late File? file;
