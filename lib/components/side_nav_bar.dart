@@ -37,25 +37,35 @@ class SideNavBar extends StatelessWidget {
               navLinkName: "Your Products",
             ),
           ),
-          InkWell(
-            onTap: () {
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => const AddProduct()));
-            },
-            child: const NavBarLinks(
-              navLinkIcon: Icons.add_to_queue,
-              navLinkName: "Add Product",
-            ),
-          ),
-          InkWell(
-            onTap: () {
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => const AddCategory()));
-            },
-            child: const NavBarLinks(
-              navLinkIcon: Icons.addchart_outlined,
-              navLinkName: "Add Category",
-            ),
+          ExpansionTile(
+            leading: const Icon(Icons.menu_book),
+            title: const Text('Menus'),
+            children: [
+              InkWell(
+                onTap: () {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const AddProduct()));
+                },
+                child: const NavBarLinks(
+                  navLinkIcon: Icons.add_to_queue,
+                  navLinkName: "Add Product",
+                ),
+              ),
+              InkWell(
+                onTap: () {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const AddCategory()));
+                },
+                child: const NavBarLinks(
+                  navLinkIcon: Icons.addchart_outlined,
+                  navLinkName: "Add Category",
+                ),
+              ),
+            ],
           ),
           InkWell(
             onTap: () {

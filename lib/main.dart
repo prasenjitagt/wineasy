@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wineasy/providers/is_products_changed_provider.dart';
+import 'package:wineasy/screens/add_category.dart';
 import 'package:wineasy/screens/dashboard.dart';
-import 'package:wineasy/screens/products.dart';
 import 'package:wineasy/screens/test.dart';
 
 void main() {
@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
           ),
           home: const Scaffold(
             // body: Test(),
-            body: Products(),
+            body: AddCategory(),
           )),
     );
   }

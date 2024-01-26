@@ -177,7 +177,7 @@ class _EditProductsState extends State<EditProducts> {
                   onTap: () => handleEditProductsubmission(context),
                   splashColor: Colors.red,
                   child: CustomButton(
-                    buttonText: "EDIT PRODUCT",
+                    buttonText: "SAVE PRODUCT",
                     buttonColor: Colors.red.withOpacity(0.9),
                     isSubmitting: isSubmitting,
                   ),

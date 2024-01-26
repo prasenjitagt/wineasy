@@ -6,12 +6,15 @@ class Test extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
     return Scaffold(
       drawer: const SideNavBar(),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
       ),
-      body: const Center(),
+      body: Center(
+        child: Text('width: $width'),
+      ),
     );
   }
 }

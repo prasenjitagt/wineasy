@@ -222,14 +222,14 @@ class _ProductDescriptionState extends State<ProductDescription> {
     isDeleting = true;
 
     //API endpoint
-    const String deleteProductsUrl = "http://localhost:4848/api/delete-product";
+    const String deleteProductUrl = "http://localhost:4848/api/delete-product";
 
     //enconding the product Id
     String encodedString = base64Encode(utf8.encode(widget.productId));
 
     try {
       Response serverResponse =
-          await Dio().delete(deleteProductsUrl, queryParameters: {
+          await Dio().delete(deleteProductUrl, queryParameters: {
         'productId': encodedString,
       });
 

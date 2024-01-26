@@ -1,10 +1,13 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:wineasy/components/custom_button.dart';
 import 'package:wineasy/components/error_card.dart';
 import 'package:wineasy/components/side_nav_bar.dart';
+import 'package:wineasy/models/category_model.dart';
 import 'package:wineasy/screens/dashboard.dart';
 
 class AddCategory extends StatefulWidget {
@@ -15,11 +18,21 @@ class AddCategory extends StatefulWidget {
 }
 
 class _AddCategoryState extends State<AddCategory> {
+  List? categoryList;
+
   //to check is form submitting
   bool isSubmitting = false;
+  //state controller for delete
+  bool isDeleting = false;
 
   //TextEditingControllers for Form
   TextEditingController productCategory = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCategories();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,50 +48,83 @@ class _AddCategoryState extends State<AddCategory> {
           ),
         ),
       ),
-      body: Center(
-        child: SizedBox(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width * 0.4,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              const Center(
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    bottom: 20,
+      body: Row(
+        children: [
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.6,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                //1st widget in coloumn
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      bottom: 20,
+                    ),
+                    child: Text(
+                      "EasyEatz",
+                      style: TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.red),
+                    ),
                   ),
-                  child: Text(
-                    "EasyEatz",
-                    style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.red),
+                ),
+
+                //2nd widget in coloumn
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 80.0),
+                  child: TextField(
+                    controller: productCategory,
+                    keyboardType: TextInputType.text,
+                    decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Category Name',
+                        hintText: 'Enter valid a category name'),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 20.0),
-                child: TextField(
-                  controller: productCategory,
-                  keyboardType: TextInputType.text,
-                  decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Category Name',
-                      hintText: 'Enter valid a category name'),
-                ),
-              ),
-              InkWell(
-                onTap: () => handleAddCategoryubmission(context),
-                splashColor: Colors.red,
-                child: CustomButton(
-                  buttonText: "ADD PRODUCT",
-                  buttonColor: Colors.red.withOpacity(0.9),
-                  isSubmitting: isSubmitting,
-                ),
-              )
-            ],
+
+                // 3rd Widget in coloumn
+                InkWell(
+                  onTap: () => handleAddCategoryubmission(context),
+                  splashColor: Colors.red,
+                  child: CustomButton(
+                    buttonText: "ADD PRODUCT",
+                    buttonColor: Colors.red.withOpacity(0.9),
+                    isSubmitting: isSubmitting,
+                  ),
+                )
+              ],
+            ),
           ),
-        ),
+          const VerticalDivider(
+            color: Colors.black,
+          ),
+          SizedBox(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width * 0.3,
+            child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 30.0),
+                child: categoryList == null
+                    ? const Center(child: Text('No Categories yet'))
+                    : ListView.builder(
+                        itemCount: categoryList!.length,
+                        itemBuilder: (context, index) => ListTile(
+                              leading: Text(
+                                '${index + 1}. ${categoryList![index]['categoryName']}',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(fontSize: 15),
+                              ),
+                              trailing: IconButton(
+                                  onPressed: () {
+                                    deleteCategory(categoryList![index]['_id']);
+                                  },
+                                  icon:
+                                      const Icon(Icons.delete_forever_rounded)),
+                            ))),
+          )
+        ],
       ),
     );
   }
@@ -126,7 +172,7 @@ class _AddCategoryState extends State<AddCategory> {
         //if upload was successfull then
         if (serverResponse.statusCode == 200) {
           //snackbar to show that product was added
-          final productAddedSnackBar = SnackBar(
+          final categoryAddedSnackBar = SnackBar(
             duration: const Duration(milliseconds: 800),
             showCloseIcon: true,
             closeIconColor: Colors.black,
@@ -137,7 +183,26 @@ class _AddCategoryState extends State<AddCategory> {
             ),
           );
 
-          ScaffoldMessenger.of(context).showSnackBar(productAddedSnackBar);
+          ScaffoldMessenger.of(context).showSnackBar(categoryAddedSnackBar);
+
+          //Clearing the controller
+          productCategory.clear();
+
+          fetchCategories();
+        } else if (serverResponse.statusCode == 205) {
+          //snackbar to show that category already exists
+          final categoryExistsSnackBar = SnackBar(
+            duration: const Duration(milliseconds: 800),
+            showCloseIcon: true,
+            closeIconColor: Colors.black,
+            backgroundColor: Colors.red.withOpacity(1),
+            content: const Text(
+              'Category Already Exists',
+              style: TextStyle(color: Colors.black, fontSize: 30),
+            ),
+          );
+
+          ScaffoldMessenger.of(context).showSnackBar(categoryExistsSnackBar);
 
           //Clearing the controller
           productCategory.clear();
@@ -167,6 +232,58 @@ class _AddCategoryState extends State<AddCategory> {
       setState(() {
         isSubmitting = false;
       });
+    }
+  }
+
+  void fetchCategories() async {
+    const String getCategoriesUrl = "http://localhost:4848/api/get-categories";
+    try {
+      Response serverResponse = await Dio().get(getCategoriesUrl);
+
+      if (serverResponse.statusCode == 200) {
+        // Setting the serverResponse data to category List
+        setState(() {
+          categoryList = serverResponse.data;
+        });
+      } else if (serverResponse.statusCode == 204) {
+        setState(() {
+          categoryList = null;
+        });
+      } else {
+        setState(() {
+          categoryList = null;
+        });
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+
+      rethrow;
+    }
+  }
+
+  deleteCategory(String categoryId) async {
+    isDeleting = true;
+
+    //API endpoint
+    const String deleteCategoryUrl =
+        "http://localhost:4848/api/delete-category";
+
+    //enconding the product Id
+    String encodedString = base64Encode(utf8.encode(categoryId));
+
+    try {
+      Response serverResponse =
+          await Dio().delete(deleteCategoryUrl, queryParameters: {
+        'categoryId': encodedString,
+      });
+
+      if (serverResponse.statusCode == 200) {
+        fetchCategories();
+      }
+    } catch (error) {
+      print('unexpected server error at product description: $error');
+    } finally {
+      isDeleting = false;
     }
   }
 }
