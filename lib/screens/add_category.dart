@@ -254,6 +254,12 @@ class _AddCategoryState extends State<AddCategory> {
           //Clearing the controller
           productCategory.clear();
 
+          //Resetting dropdown valus
+          setState(() {
+            file = null;
+            finalImageName = "";
+          });
+
           fetchCategories();
         } else if (serverResponse.statusCode == 205) {
           //snackbar to show that category already exists
@@ -272,6 +278,12 @@ class _AddCategoryState extends State<AddCategory> {
 
           //Clearing the controller
           productCategory.clear();
+
+          //Resetting dropdown valus
+          setState(() {
+            file = null;
+            finalImageName = "";
+          });
         } else {
           Navigator.pushReplacement(
               context,
