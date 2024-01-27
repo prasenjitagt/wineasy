@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:wineasy/components/custom_button.dart';
 import 'package:wineasy/components/error_card.dart';
 import 'package:wineasy/components/side_nav_bar.dart';
-import 'package:wineasy/models/category_model.dart';
 import 'package:wineasy/screens/dashboard.dart';
 
 class AddCategory extends StatefulWidget {
