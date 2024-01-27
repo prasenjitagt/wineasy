@@ -226,6 +226,7 @@ class _AddProducttate extends State<AddProduct> {
     }
   }
 
+  //function for picking image
   void imagePick() async {
     try {
       FilePickerResult? result =
@@ -337,7 +338,7 @@ class _AddProducttate extends State<AddProduct> {
             ),
           );
 
-//if upload was successfull then
+          //if upload was successfull then
           if (serverResponse.statusCode == 200) {
             //snackbar to show that product was added
             final productAddedSnackBar = SnackBar(

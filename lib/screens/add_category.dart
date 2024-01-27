@@ -1,9 +1,12 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 import 'package:wineasy/components/custom_button.dart';
 import 'package:wineasy/components/error_card.dart';
 import 'package:wineasy/components/side_nav_bar.dart';
@@ -26,6 +29,11 @@ class _AddCategoryState extends State<AddCategory> {
 
   //TextEditingControllers for Form
   TextEditingController productCategory = TextEditingController();
+
+//Image Picker Variables
+  late File? file;
+  String finalImageName = "";
+  late String fullImageName;
 
   @override
   void initState() {
@@ -84,11 +92,33 @@ class _AddCategoryState extends State<AddCategory> {
                 ),
 
                 // 3rd Widget in coloumn
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 20.0),
+                  child: Container(
+                    decoration: BoxDecoration(border: Border.all()),
+                    width: double.maxFinite,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: TextButton(
+                          onPressed: imagePick,
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Select Image \n$finalImageName',
+                              style: const TextStyle(
+                                  color: Colors.red, fontSize: 16),
+                            ),
+                          )),
+                    ),
+                  ),
+                ),
+
+                // 4th Widget in coloumn
                 InkWell(
                   onTap: () => handleAddCategoryubmission(context),
                   splashColor: Colors.red,
                   child: CustomButton(
-                    buttonText: "ADD PRODUCT",
+                    buttonText: "ADD CATEGORY",
                     buttonColor: Colors.red.withOpacity(0.9),
                     isSubmitting: isSubmitting,
                   ),
@@ -128,14 +158,44 @@ class _AddCategoryState extends State<AddCategory> {
     );
   }
 
-//ADD PRODUCT function
+  //function for picking image
+  void imagePick() async {
+    try {
+      FilePickerResult? result =
+          await FilePicker.platform.pickFiles(type: FileType.image);
+
+      if (result != null) {
+        file = File(result.files.single.path!);
+
+        //handling the file name
+        setState(() {
+          fullImageName = basename(file!.path);
+
+          if (fullImageName.length < 15) {
+            finalImageName = '$fullImageName...';
+          } else {
+            finalImageName = '${fullImageName.substring(0, 14)}...';
+          }
+        });
+      } else {
+        // User canceled the picker
+        setState(() {
+          finalImageName = 'Please Select Image  !';
+        });
+      }
+    } catch (error) {
+      print('Error: $error');
+    }
+  }
+
+  //ADD CATEGORY function
 
   void handleAddCategoryubmission(BuildContext context) async {
     try {
       String categoryValue = productCategory.value.text;
 
       // If All feilds are not filled then if condition will run otherwise else will run
-      if (categoryValue == "") {
+      if (categoryValue == "" || finalImageName == "") {
         //Error Snackbar If data is empty
         final formErrorSnackBar = SnackBar(
           duration: const Duration(milliseconds: 800),
@@ -160,8 +220,15 @@ class _AddCategoryState extends State<AddCategory> {
 
         const String addCategoryUrl = "http://localhost:4848/api/add-category";
 
+        List<int> fileBytes = await file!.readAsBytes();
+        String encodedImage = base64Encode(fileBytes);
+
         //converting category data to json
-        Map<String, dynamic> val = {'category': categoryValue};
+        Map<String, dynamic> val = {
+          'category': categoryValue,
+          'categoryImage': encodedImage,
+          'imageName': fullImageName
+        };
 
         Response serverResponse = await Dio().post(
           addCategoryUrl,
