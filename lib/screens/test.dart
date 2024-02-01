@@ -1,45 +1,43 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:wineasy/providers/socket_data_provider.dart';
 import '../components/side_nav_bar.dart';
-import './../providers/socket_data_provider.dart';
 
-class Test extends StatelessWidget {
+class Test extends ConsumerWidget {
   const Test({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final orderData = ref.watch(providerOfSocket);
 
     return Scaffold(
-        drawer: const SideNavBar(),
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-        ),
-        body: Consumer<SocketDataProvider>(
-            builder: (context, socketDataFromProvider, child) => Center(
-                  child: Text('data: ${socketDataFromProvider.socketData}'),
-                )));
+      drawer: const SideNavBar(),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+      ),
+      body: orderData.when(
+          data: (data) {
+            return ListView.builder(
+                itemCount: data.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    leading: SizedBox(
+                        width: 300,
+                        child: Text('${data[index]['item']['productName']}',
+                            style: const TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.w700))),
+                  );
+                });
+          },
+          error: (_, __) {
+            print(_.toString());
+            return const Text('Error');
+          },
+          loading: () => const Center(
+                  child: Text(
+                'No Orders Yet ',
+                style: TextStyle(fontSize: 50, fontWeight: FontWeight.w700),
+              ))),
+    );
   }
 }
-
-/*
-
- Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text('Width: $width'),
-            const SizedBox(height: 20),
-            Consumer<SocketDataProvider>(
-              builder: (context, socketDataProvider, child) {
-                // Access the socket data using socketDataProvider.socketData
-                List<dynamic> socketData = socketDataProvider.socketData;
-
-                // Use the socketData in your UI
-                return Text('Socket Data: $socketData');
-              },
-            ),
-          ],
-        ),
-      ),
-
-*/

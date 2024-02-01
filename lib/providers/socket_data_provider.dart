@@ -1,11 +1,16 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
-class SocketDataProvider extends ChangeNotifier {
-  List<dynamic> socketData = [];
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:wineasy/services/socket_service.dart';
 
-  void setSocketData(List<dynamic> data) {
-    final index = socketData.length;
-    socketData.add(data);
-    notifyListeners();
+final providerOfSocket = StreamProvider((ref) async* {
+  StreamController stream = StreamController();
+
+  SocketService().socket.on('orderToKitchen', (dataFromServer) {
+    stream.add(dataFromServer);
+  });
+
+  await for (final value in stream.stream) {
+    yield value;
   }
-}
+});
