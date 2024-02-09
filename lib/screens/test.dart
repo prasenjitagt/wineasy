@@ -22,10 +22,17 @@ class Test extends ConsumerWidget {
                 itemBuilder: (context, index) {
                   return ListTile(
                     leading: SizedBox(
-                        width: 300,
-                        child: Text('${data[index]['item']['productName']}',
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: data[index].map<Widget>((eachOrder) {
+                          return Text(
+                            '${eachOrder['item']['productName']}',
                             style: const TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.w700))),
+                                fontSize: 20, fontWeight: FontWeight.w700),
+                          );
+                        }).toList(),
+                      ),
+                    ),
                   );
                 });
           },
