@@ -20,6 +20,9 @@ class Orders extends ConsumerWidget {
             return ListView.builder(
                 itemCount: data.length,
                 itemBuilder: (context, index) {
+                  //Unique ID of every order
+                  int uuid = data[index][1]['uniqueId'];
+
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
@@ -46,7 +49,6 @@ class Orders extends ConsumerWidget {
                             ),
 
                             //Order Status
-
                             SizedBox(
                               width: 200,
                               child: Text(
@@ -59,7 +61,9 @@ class Orders extends ConsumerWidget {
                             Row(
                               children: [
                                 OutlinedButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      print(uuid);
+                                    },
                                     child: const Text(
                                       'Ready',
                                       style: TextStyle(
