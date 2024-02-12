@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wineasy/screens/orders.dart';
 import 'package:wineasy/screens/test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wineasy/services/socket_service.dart';
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
         useMaterial3: true,
       ),
-      home: const Test(),
+      home: const Orders(),
     );
   }
 }

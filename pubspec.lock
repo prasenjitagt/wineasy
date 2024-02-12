@@ -134,6 +134,17 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.17"
+<<<<<<< HEAD
+=======
+  flutter_riverpod:
+    dependency: "direct main"
+    description:
+      name: flutter_riverpod
+      sha256: "4bce556b7ecbfea26109638d5237684538d4abc509d253e6c5c4c5733b360098"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.10"
+>>>>>>> trying-provider
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -164,10 +175,10 @@ packages:
     dependency: "direct main"
     description:
       name: image
-      sha256: "004a2e90ce080f8627b5a04aecb4cdfac87d2c3f3b520aa291260be5a32c033d"
+      sha256: "49a0d4b0c12402853d3f227fe7c315601b238d126aa4caa5dbb2dcf99421aa4a"
       url: "https://pub.dev"
     source: hosted
-    version: "4.1.4"
+    version: "4.1.6"
   js:
     dependency: transitive
     description:
@@ -259,11 +270,19 @@ packages:
   provider:
     dependency: "direct main"
     description:
+<<<<<<< HEAD
       name: provider
       sha256: "9a96a0a19b594dbc5bf0f1f27d2bc67d5f95957359b461cd9feb44ed6ae75096"
       url: "https://pub.dev"
     source: hosted
     version: "6.1.1"
+=======
+      name: riverpod
+      sha256: "548e2192eb7aeb826eb89387f814edb76594f3363e2c0bb99dd733d795ba3589"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.5.0"
+>>>>>>> trying-provider
   sky_engine:
     dependency: transitive
     description: flutter
