@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mccounting_text/mccounting_text.dart';
 
 class CardOfTodaysStats extends StatelessWidget {
   final String title;
@@ -16,8 +17,9 @@ class CardOfTodaysStats extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
       width: 250,
+      constraints: const BoxConstraints(minHeight: 180),
       child: Card(
         color: Colors.white,
         child: Padding(
@@ -80,8 +82,11 @@ class CardOfTodaysStats extends StatelessWidget {
               //Price and Quantity
               Row(
                 children: [
-                  Text(
-                    '₹$productTotalRevenue',
+                  McCountingText(
+                    begin: 0,
+                    end: double.parse(productTotalRevenue),
+                    precision: 2,
+                    duration: const Duration(milliseconds: 600),
                     style: const TextStyle(
                         fontSize: 25, fontWeight: FontWeight.bold),
                   ),

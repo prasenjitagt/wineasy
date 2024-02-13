@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:wineasy/components/dashboard_components/past_30_days_stats.dart';
 import 'package:wineasy/components/dashboard_components/todays_stats.dart';
 import 'package:wineasy/components/side_nav_bar.dart';
 
@@ -25,7 +26,9 @@ class _DashboardState extends State<Dashboard> {
       ),
       body: const Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.0),
-        child: TodaysStats(),
+        child: Row(
+          children: [TodaysStats(), PastThirtyDaysStats()],
+        ),
       ),
     );
   }

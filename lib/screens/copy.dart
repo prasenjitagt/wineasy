@@ -1,189 +1,117 @@
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
-import 'package:wineasy/components/dashboard_components/card_of_todays_stats.dart';
+import 'package:mccounting_text/mccounting_text.dart';
 
-class TodaysStats extends StatefulWidget {
-  const TodaysStats({super.key});
-
-  @override
-  State<TodaysStats> createState() => _TodaysStatsState();
-}
-
-class _TodaysStatsState extends State<TodaysStats> {
-  List<dynamic>? todaySales;
-  int highestCount = 0;
-  int lowestCount = 10000;
-  String mostSoldProduct = "Loading";
-  String leastSoldProduct = "Loading";
-
-  String grandTotalRevenue = "0.00";
-  String totalRevenueOfMostSoldFood = "0.00";
-  String totalRevenueOfLeastSoldFood = "0.00";
-  @override
-  void initState() {
-    fetchSalesData();
-    super.initState();
-  }
+class CardOfTodaysStats extends StatelessWidget {
+  final String title;
+  final String productName;
+  final String productTotalRevenue;
+  final int productSoldQty;
+  final Icon titleIcon;
+  const CardOfTodaysStats(
+      {super.key,
+      required this.title,
+      required this.productName,
+      required this.productTotalRevenue,
+      required this.productSoldQty,
+      required this.titleIcon});
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-        width: MediaQuery.of(context).size.width,
-        child: todaySales == null
-            ? const Center(child: Text('No Categories yet'))
-            : Row(
+    return Container(
+      width: 250,
+      constraints: BoxConstraints(minHeight: 180),
+      child: Card(
+        color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.only(
+            bottom: 8.0,
+            left: 8.0,
+          ),
+          child: Column(
+            children: [
+              // Arrow Icon and Most Sold Item text
+              Row(
+                // crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  CardOfTodaysStats(
-                    title: "Todays Most Sold Item",
-                    productName: mostSoldProduct,
-                    productTotalRevenue: totalRevenueOfMostSoldFood,
-                    productSoldQty: highestCount,
-                    titleIcon: Icon(
-                      Icons.show_chart_rounded,
-                      color: Colors.deepPurple.shade800,
-                      size: 35,
-                    ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.deepPurple.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(8)),
+                        child: titleIcon),
                   ),
+                  //Its a Gap withing arrow and Most Sold Item
                   const SizedBox(
-                    width: 20,
+                    width: 15,
                   ),
-                  CardOfTodaysStats(
-                    title: "Todays Least Sold Item",
-                    productName: leastSoldProduct,
-                    productTotalRevenue: totalRevenueOfLeastSoldFood,
-                    productSoldQty: lowestCount,
-                    titleIcon: Icon(
-                      Icons.arrow_downward,
-                      color: Colors.deepPurple.shade800,
-                      size: 35,
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  CardOfTodaysStats(
-                    title: "Todays Total Revenue",
-                    productName: "",
-                    productTotalRevenue: grandTotalRevenue,
-                    productSoldQty: highestCount,
-                    titleIcon: Icon(
-                      Icons.receipt_long_outlined,
-                      color: Colors.deepPurple.shade800,
-                      size: 35,
-                    ),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                        fontSize: 15, fontWeight: FontWeight.bold),
                   )
                 ],
-              ));
-  }
+              ),
 
-  // Function to fetch sales data from the server
-  void fetchSalesData() async {
-    const String getSalesUrl = "http://localhost:4848/api/get-sales";
-    try {
-      Response serverResponse =
-          await Dio().get(getSalesUrl, queryParameters: {'filter': 'today'});
-      if (serverResponse.data.runtimeType == List) {
-        setState(() {
-          todaySales = serverResponse.data;
-        });
+              //Its a Gap between Most Sold Item and Food Product Name
+              const SizedBox(
+                height: 10,
+              ),
 
-        calculateMostSoldProduct();
-        calculateLeastSoldProduct();
-      } else if (serverResponse == 204) {
-        setState(() {
-          todaySales = null;
-        });
-      } else {
-        setState(() {
-          todaySales = null;
-        });
-      }
-    } catch (e) {
-      print('Error fetching data: $e');
+              //Product Name and Count
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 150,
+                    child: Text(
+                      productName,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 3,
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.normal),
+                    ),
+                  ),
+                ],
+              ),
+              //Its a Gap between  Food Product Name and Total Revenue
+              const SizedBox(
+                height: 10,
+              ),
 
-      rethrow;
-    }
-  }
-
-  //for calculating most sold
-  calculateMostSoldProduct() async {
-    Map<String, int> productItemCount = {};
-    int grandTotalRevenueInPaise = 0;
-    int productPrice = 0;
-    if (todaySales != null) {
-      for (var order in todaySales!) {
-        for (var orderItem in order['orderItems']) {
-          String productName = orderItem['item']['productName'];
-          int itemCount = orderItem['itemCount'];
-          productPrice = int.parse(orderItem['item']['price']);
-          grandTotalRevenueInPaise = productPrice * itemCount;
-
-          productItemCount.update(
-            productName,
-            (count) => count + itemCount,
-            ifAbsent: () => itemCount,
-          );
-        }
-      }
-
-      //calculating the grand total in
-      double decimalGrandTotalRevenue = grandTotalRevenueInPaise / 100;
-
-      //storing convert grandtotal to 2 decimal places
-      grandTotalRevenue = decimalGrandTotalRevenue.toStringAsFixed(2);
-
-      productItemCount.forEach((productName, itemCount) {
-        if (itemCount > highestCount) {
-          highestCount = itemCount;
-          mostSoldProduct = productName;
-        }
-      });
-
-      //Multipling Product Price with Qty
-      productPrice = productPrice * highestCount;
-      double decimalProductPrice = productPrice / 100;
-
-      // storing the convert rupees result
-      totalRevenueOfMostSoldFood = decimalProductPrice.toStringAsFixed(2);
-    } else {
-      print('reached else');
-    }
-  }
-
-  //for calculating least sold
-  calculateLeastSoldProduct() async {
-    Map<String, int> productItemCount = {};
-    int productPrice = 0;
-    if (todaySales != null) {
-      for (var order in todaySales!) {
-        for (var orderItem in order['orderItems']) {
-          String productName = orderItem['item']['productName'];
-          int itemCount = orderItem['itemCount'];
-          productPrice = int.parse(orderItem['item']['price']);
-
-          productItemCount.update(
-            productName,
-            (count) => count + itemCount,
-            ifAbsent: () => itemCount,
-          );
-        }
-      }
-
-      productItemCount.forEach((productName, itemCount) {
-        if (itemCount < lowestCount) {
-          lowestCount = itemCount;
-          leastSoldProduct = productName;
-        }
-      });
-
-      //Multipling Product Price with Qty
-      productPrice = productPrice * lowestCount;
-      double decimalProductPrice = productPrice / 100;
-
-      // storing the convert rupees result
-      totalRevenueOfLeastSoldFood = decimalProductPrice.toStringAsFixed(2);
-    } else {
-      print('reached else');
-    }
+              //Price and Quantity
+              Row(
+                children: [
+                  Text(
+                    '₹$productTotalRevenue',
+                    style: const TextStyle(
+                        fontSize: 25, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(
+                    width: 30,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                        color: Colors.green.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(8)),
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          bottom: 2.0, left: 4.0, right: 4.0),
+                      child: Text(
+                        'Qty. $productSoldQty',
+                        style: TextStyle(
+                            color: Colors.green.shade800,
+                            fontSize: 15,
+                            fontWeight: FontWeight.normal),
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

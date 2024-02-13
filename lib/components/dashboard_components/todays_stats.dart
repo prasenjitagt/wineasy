@@ -11,12 +11,14 @@ class TodaysStats extends StatefulWidget {
 
 class _TodaysStatsState extends State<TodaysStats> {
   List<dynamic>? todaySales;
-  int highestCount = 0;
-  int lowestCount = 10000;
+  int mostSoldProductQty = 0;
+  int leastSoldProductQty = 10000;
   String mostSoldProduct = "Loading";
   String leastSoldProduct = "Loading";
 
   String grandTotalRevenue = "0.00";
+  int totalItemCount = 0;
+
   String totalRevenueOfMostSoldFood = "0.00";
   String totalRevenueOfLeastSoldFood = "0.00";
   @override
@@ -27,54 +29,62 @@ class _TodaysStatsState extends State<TodaysStats> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-        width: MediaQuery.of(context).size.width,
-        child: todaySales == null
-            ? const Center(child: Text('No Categories yet'))
-            : SizedBox(
-                width: MediaQuery.of(context).size.width / 2,
-                child: GridView.count(
-                  shrinkWrap: true,
-                  mainAxisSpacing: 10,
-                  crossAxisSpacing: 10,
-                  crossAxisCount: 2,
-                  children: [
-                    CardOfTodaysStats(
-                      title: "Todays Most Sold Item",
-                      productName: mostSoldProduct,
-                      productTotalRevenue: totalRevenueOfMostSoldFood,
-                      productSoldQty: highestCount,
-                      titleIcon: Icon(
-                        Icons.show_chart_rounded,
-                        color: Colors.deepPurple.shade800,
-                        size: 35,
-                      ),
+    return todaySales == null
+        ? const Center(child: Text('No Categories yet'))
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              //Most and least sold Item
+              Row(
+                children: [
+                  CardOfTodaysStats(
+                    title: "Todays Most Sold Item",
+                    productName: mostSoldProduct,
+                    productTotalRevenue: totalRevenueOfMostSoldFood,
+                    productSoldQty: mostSoldProductQty,
+                    titleIcon: Icon(
+                      Icons.show_chart_rounded,
+                      color: Colors.deepPurple.shade800,
+                      size: 35,
                     ),
-                    CardOfTodaysStats(
-                      title: "Todays Least Sold Item",
-                      productName: leastSoldProduct,
-                      productTotalRevenue: totalRevenueOfLeastSoldFood,
-                      productSoldQty: lowestCount,
-                      titleIcon: Icon(
-                        Icons.arrow_downward,
-                        color: Colors.deepPurple.shade800,
-                        size: 35,
-                      ),
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  CardOfTodaysStats(
+                    title: "Todays Least Sold Item",
+                    productName: leastSoldProduct,
+                    productTotalRevenue: totalRevenueOfLeastSoldFood,
+                    productSoldQty: leastSoldProductQty,
+                    titleIcon: Icon(
+                      Icons.arrow_downward,
+                      color: Colors.deepPurple.shade800,
+                      size: 35,
                     ),
-                    CardOfTodaysStats(
-                      title: "Todays Total Revenue",
-                      productName: "",
-                      productTotalRevenue: grandTotalRevenue,
-                      productSoldQty: highestCount,
-                      titleIcon: Icon(
-                        Icons.receipt_long_outlined,
-                        color: Colors.deepPurple.shade800,
-                        size: 35,
-                      ),
-                    )
-                  ],
-                ),
-              ));
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              //Total revenue and qty
+              Row(
+                children: [
+                  CardOfTodaysStats(
+                    title: "Todays Total Revenue",
+                    productName: "",
+                    productTotalRevenue: grandTotalRevenue,
+                    productSoldQty: totalItemCount,
+                    titleIcon: Icon(
+                      Icons.receipt_long_outlined,
+                      color: Colors.deepPurple.shade800,
+                      size: 35,
+                    ),
+                  )
+                ],
+              )
+            ],
+          );
   }
 
   // Function to fetch sales data from the server
@@ -117,8 +127,11 @@ class _TodaysStatsState extends State<TodaysStats> {
           String productName = orderItem['item']['productName'];
           int itemCount = orderItem['itemCount'];
           productPrice = int.parse(orderItem['item']['price']);
-          grandTotalRevenueInPaise = productPrice * itemCount;
 
+          //grand total
+          grandTotalRevenueInPaise += productPrice * itemCount;
+          //grand Item count
+          totalItemCount += itemCount;
           productItemCount.update(
             productName,
             (count) => count + itemCount,
@@ -134,14 +147,14 @@ class _TodaysStatsState extends State<TodaysStats> {
       grandTotalRevenue = decimalGrandTotalRevenue.toStringAsFixed(2);
 
       productItemCount.forEach((productName, itemCount) {
-        if (itemCount > highestCount) {
-          highestCount = itemCount;
+        if (itemCount > mostSoldProductQty) {
+          mostSoldProductQty = itemCount;
           mostSoldProduct = productName;
         }
       });
 
       //Multipling Product Price with Qty
-      productPrice = productPrice * highestCount;
+      productPrice = productPrice * mostSoldProductQty;
       double decimalProductPrice = productPrice / 100;
 
       // storing the convert rupees result
@@ -171,14 +184,14 @@ class _TodaysStatsState extends State<TodaysStats> {
       }
 
       productItemCount.forEach((productName, itemCount) {
-        if (itemCount < lowestCount) {
-          lowestCount = itemCount;
+        if (itemCount < leastSoldProductQty) {
+          leastSoldProductQty = itemCount;
           leastSoldProduct = productName;
         }
       });
 
       //Multipling Product Price with Qty
-      productPrice = productPrice * lowestCount;
+      productPrice = productPrice * leastSoldProductQty;
       double decimalProductPrice = productPrice / 100;
 
       // storing the convert rupees result
