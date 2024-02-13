@@ -1,117 +1,110 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:mccounting_text/mccounting_text.dart';
 
-class CardOfTodaysStats extends StatelessWidget {
-  final String title;
-  final String productName;
-  final String productTotalRevenue;
-  final int productSoldQty;
-  final Icon titleIcon;
-  const CardOfTodaysStats(
-      {super.key,
-      required this.title,
-      required this.productName,
-      required this.productTotalRevenue,
-      required this.productSoldQty,
-      required this.titleIcon});
+class PastThirtyDaysStats extends StatefulWidget {
+  const PastThirtyDaysStats({super.key});
+
+  @override
+  State<PastThirtyDaysStats> createState() => _PastThirtyDaysStatsState();
+}
+
+class _PastThirtyDaysStatsState extends State<PastThirtyDaysStats> {
+  List<dynamic>? past30DaysSales;
+
+  //for Grand Total
+  int totalItemCount = 0;
+  String grandTotalRevenue = "0.00";
+
+  //for most sold item
+  String mostSoldProduct = "Loading";
+  String totalRevenueOfMostSoldFood = "0.00";
+  int mostSoldProductQty = 0;
+  @override
+  void initState() {
+    fetchSalesData();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 250,
-      constraints: BoxConstraints(minHeight: 180),
-      child: Card(
-        color: Colors.white,
-        child: Padding(
-          padding: const EdgeInsets.only(
-            bottom: 8.0,
-            left: 8.0,
-          ),
-          child: Column(
-            children: [
-              // Arrow Icon and Most Sold Item text
-              Row(
-                // crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Container(
-                        decoration: BoxDecoration(
-                            color: Colors.deepPurple.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(8)),
-                        child: titleIcon),
-                  ),
-                  //Its a Gap withing arrow and Most Sold Item
-                  const SizedBox(
-                    width: 15,
-                  ),
-                  Text(
-                    title,
-                    style: const TextStyle(
-                        fontSize: 15, fontWeight: FontWeight.bold),
-                  )
-                ],
-              ),
+    return past30DaysSales == null
+        ? const Center(child: Text('No Categories yet'))
+        : Center(child: Text(mostSoldProduct));
+  }
 
-              //Its a Gap between Most Sold Item and Food Product Name
-              const SizedBox(
-                height: 10,
-              ),
+  // Function to fetch sales data from the server
+  void fetchSalesData() async {
+    const String getSalesUrl = "http://localhost:4848/api/get-sales";
+    try {
+      Response serverResponse = await Dio()
+          .get(getSalesUrl, queryParameters: {'filter': 'past30days'});
+      if (serverResponse.data.runtimeType == List) {
+        setState(() {
+          past30DaysSales = serverResponse.data;
+        });
 
-              //Product Name and Count
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 150,
-                    child: Text(
-                      productName,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 3,
-                      style: const TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.normal),
-                    ),
-                  ),
-                ],
-              ),
-              //Its a Gap between  Food Product Name and Total Revenue
-              const SizedBox(
-                height: 10,
-              ),
+        calculateTotalSales();
+      } else if (serverResponse == 204) {
+        setState(() {
+          past30DaysSales = null;
+        });
+      } else {
+        setState(() {
+          past30DaysSales = null;
+        });
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
 
-              //Price and Quantity
-              Row(
-                children: [
-                  Text(
-                    '₹$productTotalRevenue',
-                    style: const TextStyle(
-                        fontSize: 25, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(
-                    width: 30,
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.3),
-                        borderRadius: BorderRadius.circular(8)),
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                          bottom: 2.0, left: 4.0, right: 4.0),
-                      child: Text(
-                        'Qty. $productSoldQty',
-                        style: TextStyle(
-                            color: Colors.green.shade800,
-                            fontSize: 15,
-                            fontWeight: FontWeight.normal),
-                      ),
-                    ),
-                  ),
-                ],
-              )
-            ],
-          ),
-        ),
-      ),
-    );
+      rethrow;
+    }
+  }
+
+  //for calculating most sold
+  calculateTotalSales() async {
+    Map<String, int> productItemCount = {};
+    int grandTotalRevenueInPaise = 0;
+    int productPrice = 0;
+    if (past30DaysSales != null) {
+      for (var order in past30DaysSales!) {
+        for (var orderItem in order['orderItems']) {
+          String productName = orderItem['item']['productName'];
+          int itemCount = orderItem['itemCount'];
+          productPrice = int.parse(orderItem['item']['price']);
+
+          //grand total
+          grandTotalRevenueInPaise += productPrice * itemCount;
+          //grand Item count
+          totalItemCount += itemCount;
+          productItemCount.update(
+            productName,
+            (count) => count + itemCount,
+            ifAbsent: () => itemCount,
+          );
+        }
+      }
+
+      //calculating the grand total in
+      double decimalGrandTotalRevenue = grandTotalRevenueInPaise / 100;
+
+      //storing convert grandtotal to 2 decimal places
+      grandTotalRevenue = decimalGrandTotalRevenue.toStringAsFixed(2);
+
+      productItemCount.forEach((productName, itemCount) {
+        if (itemCount > mostSoldProductQty) {
+          mostSoldProductQty = itemCount;
+          mostSoldProduct = productName;
+        }
+      });
+
+      //Multipling Product Price with Qty
+      productPrice = productPrice * mostSoldProductQty;
+      double decimalProductPrice = productPrice / 100;
+
+      // storing the convert rupees result
+      totalRevenueOfMostSoldFood = decimalProductPrice.toStringAsFixed(2);
+    } else {
+      print('reached else');
+    }
   }
 }

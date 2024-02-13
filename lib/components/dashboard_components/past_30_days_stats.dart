@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 class PastThirtyDaysStats extends StatefulWidget {
@@ -29,7 +30,19 @@ class _PastThirtyDaysStatsState extends State<PastThirtyDaysStats> {
   Widget build(BuildContext context) {
     return past30DaysSales == null
         ? const Center(child: Text('No Categories yet'))
-        : Center(child: Text(mostSoldProduct));
+        : SizedBox(
+            height: 300,
+            width: 300,
+            child: LineChart(LineChartData(minX: 0, maxX: 29, lineBarsData: [
+              LineChartBarData(spots: const [
+                FlSpot(0, 5),
+                FlSpot(2, 7),
+                FlSpot(4, 9),
+                FlSpot(6, 11),
+                FlSpot(8, 13),
+              ])
+            ])),
+          );
   }
 
   // Function to fetch sales data from the server
