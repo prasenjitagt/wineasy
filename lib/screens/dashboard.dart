@@ -4,7 +4,7 @@ import 'package:wineasy/components/dashboard_components/todays_stats.dart';
 import 'package:wineasy/components/side_nav_bar.dart';
 
 class Dashboard extends StatefulWidget {
-  const Dashboard({super.key});
+  const Dashboard({Key? key}) : super(key: key);
 
   @override
   State<Dashboard> createState() => _DashboardState();
@@ -24,13 +24,8 @@ class _DashboardState extends State<Dashboard> {
         backgroundColor: Colors.transparent,
       ),
       body: const Padding(
-        padding: EdgeInsets.all(8.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            TodaysStats(),
-          ],
-        ),
+        padding: EdgeInsets.symmetric(horizontal: 16.0),
+        child: TodaysStats(),
       ),
     );
   }

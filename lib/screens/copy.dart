@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import 'package:wineasy/components/error_card.dart';
+import 'package:wineasy/components/dashboard_components/card_of_todays_stats.dart';
 
 class TodaysStats extends StatefulWidget {
   const TodaysStats({super.key});
@@ -12,7 +12,13 @@ class TodaysStats extends StatefulWidget {
 class _TodaysStatsState extends State<TodaysStats> {
   List<dynamic>? todaySales;
   int highestCount = 0;
-  String? mostSoldProduct;
+  int lowestCount = 10000;
+  String mostSoldProduct = "Loading";
+  String leastSoldProduct = "Loading";
+
+  String grandTotalRevenue = "0.00";
+  String totalRevenueOfMostSoldFood = "0.00";
+  String totalRevenueOfLeastSoldFood = "0.00";
   @override
   void initState() {
     fetchSalesData();
@@ -22,17 +28,52 @@ class _TodaysStatsState extends State<TodaysStats> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 500,
-      width: MediaQuery.of(context).size.width,
-      child: todaySales == null
-          ? const Center(child: Text('No Categories yet'))
-          : ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: todaySales!.length,
-              itemBuilder: ((context, index) {
-                return Text('${index + 1}data');
-              })),
-    );
+        width: MediaQuery.of(context).size.width,
+        child: todaySales == null
+            ? const Center(child: Text('No Categories yet'))
+            : Row(
+                children: [
+                  CardOfTodaysStats(
+                    title: "Todays Most Sold Item",
+                    productName: mostSoldProduct,
+                    productTotalRevenue: totalRevenueOfMostSoldFood,
+                    productSoldQty: highestCount,
+                    titleIcon: Icon(
+                      Icons.show_chart_rounded,
+                      color: Colors.deepPurple.shade800,
+                      size: 35,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  CardOfTodaysStats(
+                    title: "Todays Least Sold Item",
+                    productName: leastSoldProduct,
+                    productTotalRevenue: totalRevenueOfLeastSoldFood,
+                    productSoldQty: lowestCount,
+                    titleIcon: Icon(
+                      Icons.arrow_downward,
+                      color: Colors.deepPurple.shade800,
+                      size: 35,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  CardOfTodaysStats(
+                    title: "Todays Total Revenue",
+                    productName: "",
+                    productTotalRevenue: grandTotalRevenue,
+                    productSoldQty: highestCount,
+                    titleIcon: Icon(
+                      Icons.receipt_long_outlined,
+                      color: Colors.deepPurple.shade800,
+                      size: 35,
+                    ),
+                  )
+                ],
+              ));
   }
 
   // Function to fetch sales data from the server
@@ -47,6 +88,7 @@ class _TodaysStatsState extends State<TodaysStats> {
         });
 
         calculateMostSoldProduct();
+        calculateLeastSoldProduct();
       } else if (serverResponse == 204) {
         setState(() {
           todaySales = null;
@@ -66,12 +108,58 @@ class _TodaysStatsState extends State<TodaysStats> {
   //for calculating most sold
   calculateMostSoldProduct() async {
     Map<String, int> productItemCount = {};
-
+    int grandTotalRevenueInPaise = 0;
+    int productPrice = 0;
     if (todaySales != null) {
       for (var order in todaySales!) {
         for (var orderItem in order['orderItems']) {
           String productName = orderItem['item']['productName'];
           int itemCount = orderItem['itemCount'];
+          productPrice = int.parse(orderItem['item']['price']);
+          grandTotalRevenueInPaise = productPrice * itemCount;
+
+          productItemCount.update(
+            productName,
+            (count) => count + itemCount,
+            ifAbsent: () => itemCount,
+          );
+        }
+      }
+
+      //calculating the grand total in
+      double decimalGrandTotalRevenue = grandTotalRevenueInPaise / 100;
+
+      //storing convert grandtotal to 2 decimal places
+      grandTotalRevenue = decimalGrandTotalRevenue.toStringAsFixed(2);
+
+      productItemCount.forEach((productName, itemCount) {
+        if (itemCount > highestCount) {
+          highestCount = itemCount;
+          mostSoldProduct = productName;
+        }
+      });
+
+      //Multipling Product Price with Qty
+      productPrice = productPrice * highestCount;
+      double decimalProductPrice = productPrice / 100;
+
+      // storing the convert rupees result
+      totalRevenueOfMostSoldFood = decimalProductPrice.toStringAsFixed(2);
+    } else {
+      print('reached else');
+    }
+  }
+
+  //for calculating least sold
+  calculateLeastSoldProduct() async {
+    Map<String, int> productItemCount = {};
+    int productPrice = 0;
+    if (todaySales != null) {
+      for (var order in todaySales!) {
+        for (var orderItem in order['orderItems']) {
+          String productName = orderItem['item']['productName'];
+          int itemCount = orderItem['itemCount'];
+          productPrice = int.parse(orderItem['item']['price']);
 
           productItemCount.update(
             productName,
@@ -82,13 +170,18 @@ class _TodaysStatsState extends State<TodaysStats> {
       }
 
       productItemCount.forEach((productName, itemCount) {
-        if (itemCount > highestCount) {
-          highestCount = itemCount;
-          mostSoldProduct = productName;
+        if (itemCount < lowestCount) {
+          lowestCount = itemCount;
+          leastSoldProduct = productName;
         }
       });
 
-      print('$mostSoldProduct $highestCount');
+      //Multipling Product Price with Qty
+      productPrice = productPrice * lowestCount;
+      double decimalProductPrice = productPrice / 100;
+
+      // storing the convert rupees result
+      totalRevenueOfLeastSoldFood = decimalProductPrice.toStringAsFixed(2);
     } else {
       print('reached else');
     }
