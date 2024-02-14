@@ -11,6 +11,7 @@ class PastThirtyDaysStats extends StatefulWidget {
 
 class _PastThirtyDaysStatsState extends State<PastThirtyDaysStats> {
   List<dynamic>? past30DaysSales;
+  List<int> revenueByDay = List.filled(30, 0);
 
   //for Grand Total
   int totalItemCount = 0;
@@ -31,8 +32,7 @@ class _PastThirtyDaysStatsState extends State<PastThirtyDaysStats> {
     return past30DaysSales == null
         ? const Center(child: Text('No Categories yet'))
         : SizedBox(
-            height: 300,
-            width: 300,
+            width: 500,
             child: LineChart(LineChartData(minX: 0, maxX: 29, lineBarsData: [
               LineChartBarData(spots: const [
                 FlSpot(0, 5),
@@ -43,6 +43,7 @@ class _PastThirtyDaysStatsState extends State<PastThirtyDaysStats> {
               ])
             ])),
           );
+    ;
   }
 
   // Function to fetch sales data from the server
@@ -57,6 +58,7 @@ class _PastThirtyDaysStatsState extends State<PastThirtyDaysStats> {
         });
 
         calculateTotalSales();
+        caltulationForChart();
       } else if (serverResponse == 204) {
         setState(() {
           past30DaysSales = null;
@@ -74,8 +76,8 @@ class _PastThirtyDaysStatsState extends State<PastThirtyDaysStats> {
   }
 
   //for calculating most sold
-  calculateTotalSales() async {
-    Map<String, int> productItemCount = {};
+  calculateTotalSales() {
+    Map<String, int> productNameAndItemCount = {};
     int grandTotalRevenueInPaise = 0;
     int productPrice = 0;
     if (past30DaysSales != null) {
@@ -83,13 +85,15 @@ class _PastThirtyDaysStatsState extends State<PastThirtyDaysStats> {
         for (var orderItem in order['orderItems']) {
           String productName = orderItem['item']['productName'];
           int itemCount = orderItem['itemCount'];
+
+          //particular product price
           productPrice = int.parse(orderItem['item']['price']);
 
           //grand total
           grandTotalRevenueInPaise += productPrice * itemCount;
           //grand Item count
           totalItemCount += itemCount;
-          productItemCount.update(
+          productNameAndItemCount.update(
             productName,
             (count) => count + itemCount,
             ifAbsent: () => itemCount,
@@ -103,7 +107,7 @@ class _PastThirtyDaysStatsState extends State<PastThirtyDaysStats> {
       //storing convert grandtotal to 2 decimal places
       grandTotalRevenue = decimalGrandTotalRevenue.toStringAsFixed(2);
 
-      productItemCount.forEach((productName, itemCount) {
+      productNameAndItemCount.forEach((productName, itemCount) {
         if (itemCount > mostSoldProductQty) {
           mostSoldProductQty = itemCount;
           mostSoldProduct = productName;
@@ -119,5 +123,25 @@ class _PastThirtyDaysStatsState extends State<PastThirtyDaysStats> {
     } else {
       print('reached else');
     }
+  }
+
+  caltulationForChart() {
+    DateTime todaysDate = DateTime.now();
+    past30DaysSales?.forEach((order) {
+      DateTime orderDate = DateTime.parse(order["createdAt"]);
+
+      int daysDiff = todaysDate.difference(orderDate).inDays;
+
+      if (daysDiff >= 0 && daysDiff < 30) {
+        int index = 29 - daysDiff;
+        int totalRevenue = order['orderItems'].fold(0, (prev, item) {
+          return prev + int.parse(item['item']['price']) * item['itemCount'];
+        });
+
+        revenueByDay[index] += totalRevenue;
+      }
+    });
+
+    print(revenueByDay);
   }
 }

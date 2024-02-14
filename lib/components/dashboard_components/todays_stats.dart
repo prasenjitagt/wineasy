@@ -117,7 +117,7 @@ class _TodaysStatsState extends State<TodaysStats> {
   }
 
   //for calculating most sold
-  calculateMostSoldProduct() async {
+  calculateMostSoldProduct() {
     Map<String, int> productItemCount = {};
     int grandTotalRevenueInPaise = 0;
     int productPrice = 0;
@@ -165,7 +165,7 @@ class _TodaysStatsState extends State<TodaysStats> {
   }
 
   //for calculating least sold
-  calculateLeastSoldProduct() async {
+  calculateLeastSoldProduct() {
     Map<String, int> productItemCount = {};
     int productPrice = 0;
     if (todaySales != null) {
