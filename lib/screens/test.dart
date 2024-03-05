@@ -1,19 +1,24 @@
-// import 'package:dio/dio.dart';
 // import 'package:flutter/material.dart';
 // import 'package:flutter_riverpod/flutter_riverpod.dart';
+// import 'package:hive_flutter/hive_flutter.dart';
+// import 'package:wineasy/components/side_nav_bar.dart';
 // import 'package:wineasy/providers/socket_data_provider.dart';
-// import '../components/side_nav_bar.dart';
 
-// class Test extends ConsumerWidget {
-//   List<dynamic>? todaySales;
-
-//   Test({Key? key}) : super(key: key);
+// class Orders extends ConsumerStatefulWidget {
+//   const Orders({super.key});
 
 //   @override
-//   Widget build(BuildContext context, WidgetRef ref) {
+//   ConsumerState<Orders> createState() => _OrdersState();
+// }
 
+// class _OrdersState extends ConsumerState<Orders> {
+//   @override
+//   void initState() {}
+
+//   @override
+//   Widget build(BuildContext context) {
 //     final orderData = ref.watch(providerOfSocket);
-  
+//     final orderDataBox = Hive.box('orderDataBox');
 //     return Scaffold(
 //       drawer: const SideNavBar(),
 //       appBar: AppBar(
@@ -21,11 +26,16 @@
 //       ),
 //       body: orderData.when(
 //           data: (data) {
+//             final orderDataFromHive = orderDataBox.get('orderData');
+
 //             return ListView.builder(
-//                 itemCount: data.length,
+//                 itemCount: orderDataFromHive.length,
 //                 itemBuilder: (context, index) {
 //                   //Unique ID of every order
-//                   int uuid = data[index][1]['uniqueId'];
+//                   int uuid = orderDataFromHive[index][1]['uniqueId'];
+//                   String orderedAt = orderDataFromHive[index][1]['orderedAt'];
+//                   String orderStatus =
+//                       orderDataFromHive[index][1]['orderStatus'];
 
 //                   return Padding(
 //                     padding: const EdgeInsets.all(8.0),
@@ -35,13 +45,23 @@
 //                         Row(
 //                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
 //                           children: [
+//                             //Order ID
+//                             SizedBox(
+//                               width: 200,
+//                               child: Text(
+//                                 '$uuid',
+//                                 style: const TextStyle(
+//                                     fontSize: 15, fontWeight: FontWeight.w700),
+//                               ),
+//                             ),
+
 //                             //Order Items and Qty
 //                             SizedBox(
 //                               width: 400,
 //                               child: Column(
 //                                 crossAxisAlignment: CrossAxisAlignment.start,
-//                                 children:
-//                                     data[index][0].map<Widget>((eachOrder) {
+//                                 children: orderDataFromHive[index][0]
+//                                     .map<Widget>((eachOrder) {
 //                                   return Text(
 //                                     '${eachOrder['item']['productName']} x ${eachOrder['itemCount']}',
 //                                     style: const TextStyle(
@@ -56,11 +76,18 @@
 //                             SizedBox(
 //                               width: 200,
 //                               child: Text(
-//                                 'Order Time: ${data[index][1]['orderedAt']}',
-//                                 style: const TextStyle(fontSize: 15),
+//                                 'Order Time: $orderedAt',
+//                                 style: const TextStyle(
+//                                     fontSize: 15, fontWeight: FontWeight.w700),
 //                               ),
 //                             ),
-
+//                             SizedBox(
+//                               width: 200,
+//                               child: Text(
+//                                 'Status: $orderStatus',
+//                                 style: statusColor(orderStatus),
+//                               ),
+//                             ),
 //                             //Ready and Cancel Buttons
 //                             Row(
 //                               children: [
@@ -108,24 +135,19 @@
 //               ))),
 //     );
 //   }
+// }
 
-//   // Function to fetch sales data from the server
-//   void fetchSalesData() async {
-//     const String getSalesUrl = "http://localhost:4848/api/get-sales";
-//     try {
-//       Response serverResponse =
-//           await Dio().get(getSalesUrl, queryParameters: {'filter': 'today'});
-//       if (serverResponse.data.runtimeType == List) {
-//         todaySales = serverResponse.data;
-//       } else if (serverResponse == 204) {
-//         todaySales = null;
-//       } else {
-//         todaySales = null;
-//       }
-//     } catch (e) {
-//       print('Error fetching data: $e');
-
-//       rethrow;
-//     }
+// TextStyle statusColor(String orderStatus) {
+//   if (orderStatus == 'pending') {
+//     return const TextStyle(
+//         color: Color.fromARGB(255, 192, 126, 3),
+//         fontSize: 15,
+//         fontWeight: FontWeight.w700);
+//   } else if (orderStatus == 'canceled') {
+//     return const TextStyle(
+//         color: Colors.red, fontSize: 15, fontWeight: FontWeight.w700);
+//   } else {
+//     return const TextStyle(
+//         color: Colors.green, fontSize: 15, fontWeight: FontWeight.w700);
 //   }
 // }

@@ -22,6 +22,8 @@ class Orders extends ConsumerWidget {
                 itemBuilder: (context, index) {
                   //Unique ID of every order
                   int uuid = data[index][1]['uniqueId'];
+                  String orderedAt = data[index][1]['orderedAt'];
+                  String orderStatus = data[index][1]['orderStatus'];
 
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -31,6 +33,16 @@ class Orders extends ConsumerWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
+                            //Order ID
+                            SizedBox(
+                              width: 200,
+                              child: Text(
+                                '$uuid',
+                                style: const TextStyle(
+                                    fontSize: 15, fontWeight: FontWeight.w700),
+                              ),
+                            ),
+
                             //Order Items and Qty
                             SizedBox(
                               width: 400,
@@ -52,11 +64,18 @@ class Orders extends ConsumerWidget {
                             SizedBox(
                               width: 200,
                               child: Text(
-                                'Order Time: ${data[index][1]['orderedAt']}',
-                                style: const TextStyle(fontSize: 15),
+                                'Order Time: $orderedAt',
+                                style: const TextStyle(
+                                    fontSize: 15, fontWeight: FontWeight.w700),
                               ),
                             ),
-
+                            SizedBox(
+                              width: 200,
+                              child: Text(
+                                'Status: $orderStatus',
+                                style: statusColor(orderStatus),
+                              ),
+                            ),
                             //Ready and Cancel Buttons
                             Row(
                               children: [
@@ -103,5 +122,20 @@ class Orders extends ConsumerWidget {
                 style: TextStyle(fontSize: 50, fontWeight: FontWeight.w700),
               ))),
     );
+  }
+}
+
+TextStyle statusColor(String orderStatus) {
+  if (orderStatus == 'pending') {
+    return const TextStyle(
+        color: Color.fromARGB(255, 192, 126, 3),
+        fontSize: 15,
+        fontWeight: FontWeight.w700);
+  } else if (orderStatus == 'canceled') {
+    return const TextStyle(
+        color: Colors.red, fontSize: 15, fontWeight: FontWeight.w700);
+  } else {
+    return const TextStyle(
+        color: Colors.green, fontSize: 15, fontWeight: FontWeight.w700);
   }
 }

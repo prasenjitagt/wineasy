@@ -1,15 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:wineasy/components/side_nav_bar.dart';
 import 'package:wineasy/providers/socket_data_provider.dart';
-import '../components/side_nav_bar.dart';
 
-class Orders extends ConsumerWidget {
-  const Orders({Key? key}) : super(key: key);
+class Orders extends ConsumerStatefulWidget {
+  const Orders({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final orderData = ref.watch(providerOfSocket);
+  ConsumerState<Orders> createState() => _OrdersState();
+}
 
+class _OrdersState extends ConsumerState<Orders> {
+  final orderDataBox = Hive.box('orderDataBox');
+  late var orderDataFromHive;
+  @override
+  void initState() {
+    orderDataFromHive = orderDataBox.get('orderData');
+    print(orderDataFromHive);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final orderData = ref.watch(providerOfSocket);
     return Scaffold(
       drawer: const SideNavBar(),
       appBar: AppBar(
@@ -18,12 +32,13 @@ class Orders extends ConsumerWidget {
       body: orderData.when(
           data: (data) {
             return ListView.builder(
-                itemCount: data.length,
+                itemCount: orderDataFromHive.length,
                 itemBuilder: (context, index) {
                   //Unique ID of every order
-                  int uuid = data[index][1]['uniqueId'];
-                  String orderedAt = data[index][1]['orderedAt'];
-                  String orderStatus = data[index][1]['orderStatus'];
+                  int uuid = orderDataFromHive[index][1]['uniqueId'];
+                  String orderedAt = orderDataFromHive[index][1]['orderedAt'];
+                  String orderStatus =
+                      orderDataFromHive[index][1]['orderStatus'];
 
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -48,8 +63,8 @@ class Orders extends ConsumerWidget {
                               width: 400,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children:
-                                    data[index][0].map<Widget>((eachOrder) {
+                                children: orderDataFromHive[index][0]
+                                    .map<Widget>((eachOrder) {
                                   return Text(
                                     '${eachOrder['item']['productName']} x ${eachOrder['itemCount']}',
                                     style: const TextStyle(
