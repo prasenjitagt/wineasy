@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:wineasy/components/dashboard_components/card_of_todays_stats.dart';
+import 'package:wineasy/components/dashboard_components/skeleton_todays_stats_card.dart';
 
 class TodaysStats extends StatefulWidget {
   const TodaysStats({super.key});
@@ -30,7 +31,28 @@ class _TodaysStatsState extends State<TodaysStats> {
   @override
   Widget build(BuildContext context) {
     return todaySales == null
-        ? const Center(child: Text('No Categories yet'))
+        ? const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              //Most and least sold Item
+              Row(
+                children: [
+                  SkeletonCardOfTodaysStats(),
+                  SizedBox(
+                    width: 20,
+                  ),
+                  SkeletonCardOfTodaysStats(),
+                ],
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              //Total revenue and qty
+              Row(
+                children: [SkeletonCardOfTodaysStats()],
+              )
+            ],
+          )
         : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
