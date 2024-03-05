@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import './screens/orders.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:wineasy/screens/test.dart';
+import 'package:wineasy/screens/orders.dart';
 import 'package:wineasy/services/socket_service.dart';
 
 void main() async {
