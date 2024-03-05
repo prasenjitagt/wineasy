@@ -13,6 +13,8 @@ class _PastThirtyDaysStatsState extends State<PastThirtyDaysStats> {
   List<dynamic>? past30DaysSales;
   List<int> revenueByDay = List.filled(30, 0);
 
+  List<Color> gradientColors = [Colors.cyan, Colors.blue];
+
   //for Grand Total
   int totalItemCount = 0;
   String grandTotalRevenue = "0.00";
@@ -29,21 +31,99 @@ class _PastThirtyDaysStatsState extends State<PastThirtyDaysStats> {
 
   @override
   Widget build(BuildContext context) {
-    return past30DaysSales == null
-        ? const Center(child: Text('No Categories yet'))
-        : SizedBox(
-            width: 500,
-            child: LineChart(LineChartData(minX: 0, maxX: 29, lineBarsData: [
-              LineChartBarData(spots: const [
-                FlSpot(0, 5),
-                FlSpot(2, 7),
-                FlSpot(4, 9),
-                FlSpot(6, 11),
-                FlSpot(8, 13),
-              ])
-            ])),
-          );
-    ;
+    return Padding(
+      padding: const EdgeInsets.only(
+        top: 20.0,
+      ),
+      child: past30DaysSales == null
+          ? const Center(child: Text('No Categories yet'))
+          : SizedBox(
+              width: 500,
+              height: 300,
+              child: LineChart(LineChartData(
+                lineTouchData: const LineTouchData(enabled: true),
+                gridData: FlGridData(
+                  show: false,
+                  getDrawingVerticalLine: (value) {
+                    return const FlLine(
+                      color: Colors.blue,
+                      strokeWidth: 1,
+                    );
+                  },
+                  getDrawingHorizontalLine: (value) {
+                    return const FlLine(
+                      color: Colors.blue,
+                      strokeWidth: 1,
+                    );
+                  },
+                ),
+                titlesData: FlTitlesData(
+                  show: true,
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 50,
+                      getTitlesWidget: bottomTitleWidgets,
+                      interval: 1,
+                    ),
+                  ),
+                  topTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  rightTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                ),
+                borderData: FlBorderData(
+                  show: false,
+                  border: Border.all(color: const Color(0xff37434d)),
+                ),
+                minX: 0,
+                maxX: 29,
+                minY: 0,
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: spotsForLineCharts(),
+                    gradient: LinearGradient(
+                      colors: [
+                        ColorTween(
+                                begin: gradientColors[0],
+                                end: gradientColors[1])
+                            .lerp(0.2)!,
+                        ColorTween(
+                                begin: gradientColors[0],
+                                end: gradientColors[1])
+                            .lerp(0.2)!,
+                      ],
+                    ),
+                    barWidth: 3,
+                    isCurved: true,
+                    isStrokeCapRound: true,
+                    dotData: const FlDotData(
+                      show: false,
+                    ),
+                    belowBarData: BarAreaData(
+                      show: true,
+                      gradient: LinearGradient(
+                        colors: [
+                          ColorTween(
+                                  begin: gradientColors[0],
+                                  end: gradientColors[1])
+                              .lerp(0.2)!
+                              .withOpacity(0.4),
+                          ColorTween(
+                                  begin: gradientColors[0],
+                                  end: gradientColors[1])
+                              .lerp(0.2)!
+                              .withOpacity(0.4),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              )),
+            ),
+    );
   }
 
   // Function to fetch sales data from the server
@@ -59,7 +139,7 @@ class _PastThirtyDaysStatsState extends State<PastThirtyDaysStats> {
 
         calculateTotalSales();
         caltulationForChart();
-      } else if (serverResponse == 204) {
+      } else if (serverResponse.statusCode == 204) {
         setState(() {
           past30DaysSales = null;
         });
@@ -141,7 +221,53 @@ class _PastThirtyDaysStatsState extends State<PastThirtyDaysStats> {
         revenueByDay[index] += totalRevenue;
       }
     });
+  }
 
-    print(revenueByDay);
+  List<FlSpot> spotsForLineCharts() {
+    final List<FlSpot> past30daysRevenue = List.generate(revenueByDay.length,
+        (index) => FlSpot(index.toDouble(), revenueByDay[index] / 100));
+
+    return past30daysRevenue;
+  }
+
+  Widget bottomTitleWidgets(double value, TitleMeta meta) {
+    const style = TextStyle(
+      fontWeight: FontWeight.normal,
+      fontSize: 12,
+    );
+    Widget text;
+    switch (value.toInt()) {
+      case 0:
+        text = const Text('DAY 1', style: style);
+        break;
+      case 5:
+        text = const Text('DAY 6', style: style);
+        break;
+      case 10:
+        text = const Text('DAY 11', style: style);
+        break;
+      case 15:
+        text = const Text('DAY 16', style: style);
+        break;
+      case 20:
+        text = const Text('DAY 21', style: style);
+        break;
+      case 25:
+        text = const Text('DAY 26', style: style);
+        break;
+      case 29:
+        text = const Text(
+          'DAY 30',
+          style: style,
+        );
+      default:
+        text = const Text('', style: style);
+        break;
+    }
+
+    return SideTitleWidget(
+      axisSide: meta.axisSide,
+      child: text,
+    );
   }
 }

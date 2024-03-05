@@ -24,10 +24,14 @@ class _DashboardState extends State<Dashboard> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
       ),
-      body: const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.0),
-        child: Row(
-          children: [TodaysStats(), PastThirtyDaysStats()],
+      body: const SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [TodaysStats(), PastThirtyDaysStats()],
+          ),
         ),
       ),
     );

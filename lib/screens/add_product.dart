@@ -14,10 +14,10 @@ class AddProduct extends StatefulWidget {
   const AddProduct({super.key});
 
   @override
-  State<AddProduct> createState() => _AddProducttate();
+  State<AddProduct> createState() => _AddProductState();
 }
 
-class _AddProducttate extends State<AddProduct> {
+class _AddProductState extends State<AddProduct> {
   // initializing variable to get products from backend
   late Future<List<CategoryModel>> categoryOfFood;
 
