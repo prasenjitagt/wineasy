@@ -5,7 +5,7 @@ import 'package:wineasy/services/socket_service.dart';
 
 final providerOfSocket = StreamProvider((ref) async* {
   StreamController stream = StreamController();
-  final orderDataBox = Hive.box('orderDataBox');
+  final orderDataBox = await Hive.openBox('orderDataBox'); // Open the box
 
   List<dynamic> orders =
       orderDataBox.get('orderData', defaultValue: <dynamic>[]);
