@@ -36,8 +36,8 @@ class _SalesState extends State<Sales> {
   @override
   void initState() {
     super.initState();
-    fetchSalesData(
-        filter); // Fetch data for default filter when the page initializes
+    // fetchSalesData(
+    //     filter); // Fetch data for default filter when the page initializes
   }
 
   @override

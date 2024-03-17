@@ -31,25 +31,48 @@ class _TodaysStatsState extends State<TodaysStats> {
   @override
   Widget build(BuildContext context) {
     return todaySales == null
-        ? const Column(
+        ? Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               //Most and least sold Item
               Row(
                 children: [
-                  SkeletonCardOfTodaysStats(),
-                  SizedBox(
+                  SkeletonCardOfTodaysStats(
+                    title: "Todays Most Sold Item",
+                    titleIcon: Icon(
+                      Icons.show_chart_rounded,
+                      color: Colors.deepPurple.shade800,
+                      size: 35,
+                    ),
+                  ),
+                  const SizedBox(
                     width: 20,
                   ),
-                  SkeletonCardOfTodaysStats(),
+                  SkeletonCardOfTodaysStats(
+                    title: "Todays Least Sold Item",
+                    titleIcon: Icon(
+                      Icons.arrow_downward,
+                      color: Colors.deepPurple.shade800,
+                      size: 35,
+                    ),
+                  ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               //Total revenue and qty
               Row(
-                children: [SkeletonCardOfTodaysStats()],
+                children: [
+                  SkeletonCardOfTodaysStats(
+                    title: "Todays Total Revenue",
+                    titleIcon: Icon(
+                      Icons.receipt_long_outlined,
+                      color: Colors.deepPurple.shade800,
+                      size: 35,
+                    ),
+                  )
+                ],
               )
             ],
           )
