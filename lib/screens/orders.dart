@@ -16,7 +16,7 @@ class Orders extends ConsumerStatefulWidget {
 
 class _OrdersState extends ConsumerState<Orders> {
   final orderDataBox = Hive.box('orderDataBox');
-  late var orderDataFromHive;
+  late List orderDataFromHive;
 
   @override
   void initState() {
