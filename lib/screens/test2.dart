@@ -11,6 +11,9 @@ class KillSwitch extends StatelessWidget {
 
     return Scaffold(
       drawer: const SideNavBar(),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+      ),
       body: Center(
         child: TextButton(
             onPressed: () {

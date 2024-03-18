@@ -6,6 +6,7 @@ import 'package:wineasy/screens/dashboard.dart';
 import 'package:wineasy/screens/orders.dart';
 import 'package:wineasy/screens/products.dart';
 import 'package:wineasy/screens/sales.dart';
+import 'package:wineasy/screens/test2.dart';
 
 class SideNavBar extends StatelessWidget {
   const SideNavBar({super.key});
@@ -85,6 +86,16 @@ class SideNavBar extends StatelessWidget {
             child: const NavBarLinks(
               navLinkIcon: Icons.business_center_outlined,
               navLinkName: "Sales",
+            ),
+          ),
+          InkWell(
+            onTap: () {
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => const KillSwitch()));
+            },
+            child: const NavBarLinks(
+              navLinkIcon: Icons.delete_forever,
+              navLinkName: "Kill Hive",
             ),
           ),
         ],
